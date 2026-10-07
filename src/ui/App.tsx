@@ -3,6 +3,7 @@ import { InfoPage } from './pages/InfoPage.tsx';
 import { LearnPage } from './pages/LearnPage.tsx';
 import { StatsPage } from './pages/StatsPage.tsx';
 import { TabBar, type Tab } from './TabBar.tsx';
+import { UpdatePrompt } from './UpdatePrompt.tsx';
 import { useHashTab } from './useHashTab.ts';
 
 const TABS = ['lernen', 'statistik', 'info'] as const;
@@ -24,6 +25,7 @@ export function App() {
         {tab === 'statistik' && <StatsPage />}
         {tab === 'info' && <InfoPage />}
       </main>
+      <UpdatePrompt />
       <TabBar tabs={TAB_ITEMS} current={tab} onSelect={setTab} />
     </div>
   );
