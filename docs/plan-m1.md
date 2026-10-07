@@ -6,24 +6,24 @@ Ziel (SPEC §8): Pipeline-Teil Verben, Engine mit Tests (≥ 200 Referenz-Stichp
 
 Karten-ID: `verb:tense:person`, z. B. `tener:subj_pres:2s`.
 
-| Tense-ID | Zeitform | Niveau | Bildung |
-|---|---|---|---|
-| `pres` | Presente | A2 | Daten |
-| `indef` | Pretérito indefinido | A2 | Daten |
-| `perf` | Pretérito perfecto | A2 | haber (pres) + Partizip |
-| `ir_a` | ir a + Infinitiv | A2 | ir (pres) + a + Infinitiv |
-| `imperf` | Imperfecto | B1 | Daten |
-| `fut` | Futuro simple | B1 | Daten |
-| `cond` | Condicional simple | B1 | Daten |
-| `subj_pres` | Subjuntivo presente | B1 | Daten |
-| `imp_aff` | Imperativo afirmativo | B1 | Daten (tú, usted, nosotros, ustedes) |
-| `imp_neg` | Imperativo negativo | B1 | no + subj_pres (tú, usted, nosotros, ustedes) |
-| `subj_imperf` | Subjuntivo imperfecto (-ra) | B2 | Daten, -se als Alternative |
-| `plusc` | Pluscuamperfecto | B2 | haber (imperf) + Partizip |
-| `fut_perf` | Futuro perfecto | B2 | haber (fut) + Partizip |
-| `cond_comp` | Condicional compuesto | B2 | haber (cond) + Partizip |
-| `subj_perf` | Subjuntivo perfecto | B2 | haber (subj_pres) + Partizip |
-| `subj_plusc` | Subjuntivo pluscuamperfecto | B2 | haber (subj_imperf -ra) + Partizip |
+| Tense-ID      | Zeitform                    | Niveau | Bildung                                       |
+| ------------- | --------------------------- | ------ | --------------------------------------------- |
+| `pres`        | Presente                    | A2     | Daten                                         |
+| `indef`       | Pretérito indefinido        | A2     | Daten                                         |
+| `perf`        | Pretérito perfecto          | A2     | haber (pres) + Partizip                       |
+| `ir_a`        | ir a + Infinitiv            | A2     | ir (pres) + a + Infinitiv                     |
+| `imperf`      | Imperfecto                  | B1     | Daten                                         |
+| `fut`         | Futuro simple               | B1     | Daten                                         |
+| `cond`        | Condicional simple          | B1     | Daten                                         |
+| `subj_pres`   | Subjuntivo presente         | B1     | Daten                                         |
+| `imp_aff`     | Imperativo afirmativo       | B1     | Daten (tú, usted, nosotros, ustedes)          |
+| `imp_neg`     | Imperativo negativo         | B1     | no + subj_pres (tú, usted, nosotros, ustedes) |
+| `subj_imperf` | Subjuntivo imperfecto (-ra) | B2     | Daten, -se als Alternative                    |
+| `plusc`       | Pluscuamperfecto            | B2     | haber (imperf) + Partizip                     |
+| `fut_perf`    | Futuro perfecto             | B2     | haber (fut) + Partizip                        |
+| `cond_comp`   | Condicional compuesto       | B2     | haber (cond) + Partizip                       |
+| `subj_perf`   | Subjuntivo perfecto         | B2     | haber (subj_pres) + Partizip                  |
+| `subj_plusc`  | Subjuntivo pluscuamperfecto | B2     | haber (subj_imperf -ra) + Partizip            |
 
 Personen: `1s` yo · `2s` tú · `3s` él/ella/usted · `1p` nosotros · `3p` ellos/ellas/ustedes. Imperativ ohne `1s`.
 
