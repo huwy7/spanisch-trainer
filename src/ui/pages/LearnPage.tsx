@@ -1,13 +1,24 @@
-import { MODULES } from '../../modules/registry.ts';
+import { MODULES, type ModuleId } from '../../modules/registry.ts';
+import { BackupReminder } from '../BackupReminder.tsx';
 
-export function LearnPage() {
+interface Props {
+  onOpen: (id: ModuleId) => void;
+}
+
+export function LearnPage({ onOpen }: Props) {
   return (
     <section className="page">
       <h1 className="page-title">Lernen</h1>
+      <BackupReminder />
       <ul className="card-list">
         {MODULES.map((m) => (
           <li key={m.id}>
-            <button type="button" className="card" disabled={!m.available}>
+            <button
+              type="button"
+              className="card"
+              disabled={!m.available}
+              onClick={() => onOpen(m.id)}
+            >
               <span className="card-badge" aria-hidden="true">
                 {m.id}
               </span>
