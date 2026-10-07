@@ -1,10 +1,7 @@
-# Temporary workflow for the M0b data spike. Removed when M0b is done.
+# M0b data spike (docs/spike-report.md). Manual only, kept for reproducibility.
 name: Data spike
 
 on:
-  push:
-    branches: ['claude/**']
-    paths: ['scripts/spike/**', '.github/workflows/spike.yml']
   workflow_dispatch:
 
 permissions:
