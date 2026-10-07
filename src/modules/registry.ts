@@ -15,7 +15,7 @@ export const MODULES: readonly ModuleInfo[] = [
     title: 'Konjugation',
     description: 'Verben in allen Zeitformen konjugieren',
     milestone: 'M1',
-    available: false,
+    available: true,
   },
   {
     id: 'M',

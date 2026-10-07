@@ -102,6 +102,25 @@ export function generateCards(
   return cards;
 }
 
+/** FNV-1a hash; deterministic pseudo-random order per card ID. */
+function hash(s: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+  return h >>> 0;
+}
+
+/**
+ * Order for introducing new cards: frequent verbs first, but mixed within blocks of
+ * `blockSize` verbs so a session does not drill one verb in all tenses at once.
+ * Deterministic: the same filter always yields the same order.
+ */
+export function interleave(cards: readonly CardRef[], blockSize = 5): CardRef[] {
+  const verbIndex = new Map<string, number>();
+  for (const c of cards) if (!verbIndex.has(c.inf)) verbIndex.set(c.inf, verbIndex.size);
+  const key = (c: CardRef) => Math.floor(verbIndex.get(c.inf)! / blockSize);
+  return [...cards].sort((a, b) => key(a) - key(b) || hash(cardId(a)) - hash(cardId(b)));
+}
+
 // ------------------------------------------------------------ answer grading
 
 export type Grade = 'correct' | 'accent' | 'wrong';

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { HAND_VERBS, HABLAR, IR, TENER, handLookup } from './__fixtures__/hand-verbs.ts';
-import { cardId, conjugate, generateCards, gradeAnswer, parseCardId } from './engine.ts';
+import {
+  cardId,
+  conjugate,
+  generateCards,
+  gradeAnswer,
+  interleave,
+  parseCardId,
+} from './engine.ts';
 import { TENSES, TENSE_IDS, personLabel, tensesOfLevel } from './tenses.ts';
 import { PERSONS } from './types.ts';
 
@@ -126,6 +133,28 @@ describe('generateCards', () => {
   it('filters irregular verbs', () => {
     const cards = generateCards(HAND_VERBS, { tenses: ['pres'], onlyIrregular: true }, handLookup);
     expect(new Set(cards.map((c) => c.inf))).toEqual(new Set(['tener', 'haber', 'ir']));
+  });
+});
+
+describe('interleave', () => {
+  const cards = generateCards(
+    HAND_VERBS,
+    { tenses: ['pres', 'indef'], onlyIrregular: false },
+    handLookup,
+  );
+
+  it('keeps all cards, mixes within a block and is deterministic', () => {
+    const a = interleave(cards, 2);
+    expect(a).toHaveLength(cards.length);
+    expect(new Set(a.map(cardId))).toEqual(new Set(cards.map(cardId)));
+    expect(a.map(cardId)).toEqual(interleave(cards, 2).map(cardId));
+    expect(a.map(cardId)).not.toEqual(cards.map(cardId));
+  });
+
+  it('introduces the most frequent verbs first', () => {
+    const a = interleave(cards, 2);
+    const firstBlock = new Set(a.slice(0, 20).map((c) => c.inf));
+    expect(firstBlock).toEqual(new Set(['haber', 'tener']));
   });
 });
 

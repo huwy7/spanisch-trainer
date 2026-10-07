@@ -45,9 +45,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // App shell only. Data chunks (public/data/) get their own strategy in M3.
-        globPatterns: ['**/*.{js,css,html,svg,png}'],
-        globIgnores: ['data/**'],
+        // App shell + verb data (~0.7 MB). Larger chunks get lazy loading in M3.
+        globPatterns: ['**/*.{js,css,html,svg,png}', 'data/verbs.json'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

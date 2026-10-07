@@ -1,3 +1,5 @@
+import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
+import type { ModuleId } from '../modules/registry.ts';
 import { BookIcon, ChartIcon, InfoIcon } from './icons.tsx';
 import { InfoPage } from './pages/InfoPage.tsx';
 import { LearnPage } from './pages/LearnPage.tsx';
@@ -6,8 +8,9 @@ import { TabBar, type Tab } from './TabBar.tsx';
 import { UpdatePrompt } from './UpdatePrompt.tsx';
 import { useHashTab } from './useHashTab.ts';
 
-const TABS = ['lernen', 'statistik', 'info'] as const;
-type TabId = (typeof TABS)[number];
+const ROUTES = ['lernen', 'statistik', 'info', 'konjugation'] as const;
+type Route = (typeof ROUTES)[number];
+type TabId = Exclude<Route, 'konjugation'>;
 
 const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'lernen', label: 'Lernen', icon: <BookIcon /> },
@@ -15,18 +18,24 @@ const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'info', label: 'Info', icon: <InfoIcon /> },
 ];
 
+const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = { K: 'konjugation' };
+
 export function App() {
-  const [tab, setTab] = useHashTab(TABS, 'lernen');
+  const [route, setRoute] = useHashTab(ROUTES, 'lernen');
+  const inModule = route === 'konjugation';
 
   return (
     <div className="app">
-      <main className="app-main">
-        {tab === 'lernen' && <LearnPage />}
-        {tab === 'statistik' && <StatsPage />}
-        {tab === 'info' && <InfoPage />}
+      <main className={inModule ? 'app-main app-main-module' : 'app-main'}>
+        {route === 'lernen' && (
+          <LearnPage onOpen={(id) => MODULE_ROUTE[id] && setRoute(MODULE_ROUTE[id])} />
+        )}
+        {route === 'statistik' && <StatsPage />}
+        {route === 'info' && <InfoPage />}
+        {route === 'konjugation' && <ConjugationModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
-      <TabBar tabs={TAB_ITEMS} current={tab} onSelect={setTab} />
+      {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabId} onSelect={setRoute} />}
     </div>
   );
 }
