@@ -1,0 +1,222 @@
+/* Design tokens. Dark mode follows the system setting. */
+:root {
+  color-scheme: light dark;
+
+  --color-bg: #f6f5f2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #efede8;
+  --color-text: #1c1b19;
+  --color-text-muted: #6b6862;
+  --color-border: #e2dfd8;
+  --color-accent: #c2410c;
+  --color-accent-contrast: #ffffff;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+
+  --radius: 14px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+
+  /* Minimum touch target (SPEC §5). */
+  --touch: 44px;
+  --tab-bar-height: 56px;
+
+  --font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #111110;
+    --color-surface: #1c1c1a;
+    --color-surface-muted: #262624;
+    --color-text: #f2f0eb;
+    --color-text-muted: #a19e97;
+    --color-border: #2f2e2b;
+    --color-accent: #fb923c;
+    --color-accent-contrast: #1c1b19;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+code {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.9em;
+}
+
+/* Layout */
+
+.app {
+  min-height: 100dvh;
+}
+
+.app-main {
+  padding: calc(env(safe-area-inset-top) + var(--space-4))
+    calc(env(safe-area-inset-right) + var(--space-4))
+    calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-6))
+    calc(env(safe-area-inset-left) + var(--space-4));
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Cards */
+
+.card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.card {
+  width: 100%;
+  min-height: calc(var(--touch) + var(--space-6));
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.card:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.card-badge {
+  flex: none;
+  width: var(--touch);
+  height: var(--touch);
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  font-weight: 700;
+}
+
+.card-body {
+  display: grid;
+  gap: 2px;
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 15px;
+  color: var(--color-text-muted);
+}
+
+/* Tab bar: fixed at the bottom, within thumb reach. */
+
+.tab-bar {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-top: 1px solid var(--color-border);
+}
+
+.tab-bar-item {
+  flex: 1;
+  min-height: var(--tab-bar-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.tab-bar-item[aria-current='page'] {
+  color: var(--color-accent);
+}
+
+.tab-bar-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

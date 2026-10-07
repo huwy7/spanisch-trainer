@@ -19,7 +19,7 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['*.{js,ts}', 'scripts/**/*.ts', 'tests-e2e/**/*.ts'],
+    files: ['*.{js,ts}', 'scripts/**/*.ts'],
     extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: { globals: globals.node },
   },
