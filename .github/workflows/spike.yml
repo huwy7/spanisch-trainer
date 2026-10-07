@@ -1,0 +1,22 @@
+# Temporary workflow for the M0b data spike. Removed when M0b is done.
+name: Data spike
+
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['scripts/spike/**', '.github/workflows/spike.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  spike:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/spike/discover.ts
