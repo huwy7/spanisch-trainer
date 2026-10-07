@@ -100,10 +100,17 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 | Speicher | IndexedDB via Dexie | Versionierung und Migrationen eingebaut |
 | SRS | ts-fsrs | aktueller Standard-Algorithmus, MIT |
 | Tests | Vitest | Pflicht für Konjugations-Engine und Filter |
+| Lint/Format | ESLint + Prettier (nur Dev) | Fehler früh finden, einheitlicher Code. TypeScript auf 6.0 gepinnt, bis typescript-eslint TS 7 unterstützt |
 | Deploy | GitHub Actions → GitHub Pages | gratis, automatisch bei Push |
 | Laufzeit-Requests | nur eigene Pages-Domain | Akku, Stabilität, Offline |
 
 UI: mobile-first, Touch-Ziele ≥ 44 px, Bedienelemente im Daumenbereich unten.
+
+Navigation: untere Tab-Leiste mit 3 Tabs (Lernen / Statistik / Info). Module und "Alles mischen" werden im Tab Lernen gewählt. Einstellungen und Backup liegen unter Info.
+
+Updates: Der Service Worker aktualisiert nie automatisch während einer Session. Ein Hinweis bietet "Aktualisieren" / "Später" an.
+
+Branches: `main` ist der Release-Branch (Deploy auf Pages). Jeder Meilenstein kommt als PR.
 
 ## 6. Datenpipeline
 
@@ -129,7 +136,7 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 
 | # | Meilenstein | Definition of Done | Status |
 |---|---|---|---|
-| M0 | Setup | Repo, Stack, PWA, Deploy via Action. Leere App auf dem iPhone-Homescreen installiert, startet im Flugmodus. | ☐ |
+| M0 | Setup | Repo, Stack, PWA, Deploy via Action. Leere App auf dem iPhone-Homescreen installiert, startet im Flugmodus. | ◐ |
 | M0b | Daten-Spike | `docs/spike-report.md` mit Zahlen und Entscheid zu jedem offenen Punkt aus §7. SPEC nachgeführt. | ☐ |
 | M1 | Konjugation | Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☐ |
 | M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☐ |
