@@ -18,7 +18,7 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 
 ## 2. Rahmenbedingungen
 
-- 0 CHF Betriebskosten, kein eigener Server. Hosting: GitHub Pages (öffentliches Repo).
+- 0 CHF Betriebskosten, kein eigener Server. Hosting: GitHub Pages (öffentliches Repo). Einmaliger manueller Schritt durch den Nutzer: Settings → Pages → Source = "GitHub Actions".
 - Zielgerät: iPhone, Safari, als PWA auf dem Homescreen installiert. Muss offline funktionieren.
 - Sprachpaar Deutsch–Spanisch.
 - Variante: Sätze gemischt (Spanien + Lateinamerika). Konjugation **ohne vosotros**, Plural 2. Person = ustedes. Kein voseo.
@@ -30,7 +30,8 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 - Aufgabe: Infinitiv (mit deutscher Bedeutung) + Person + Zeitform → konjugierte Form.
 - Personen: yo, tú, él/ella/usted, nosotros, ellos/ellas/ustedes.
 - Antwortmodi: **Aufdecken + selbst bewerten** (Standard) oder **Tippen**.
-- Tippen: Akzentfehler werden als "fast richtig" angezeigt und als Hard gewertet. Ein Ñ/Akzent-Hilfsleiste über der Tastatur.
+- Tippen: Akzentfehler werden als "fast richtig" angezeigt und als Hard gewertet. Eine Ñ/Akzent-Hilfsleiste über der Tastatur.
+- Imperativo (afirmativo + negativo) nur für tú, usted, nosotros, ustedes. Für yo gibt es keine Imperativ-Karten. Die Personen-Liste ist pro Zeitform definiert, damit keine ungültigen Karten-IDs entstehen.
 - Filter: Zeitformen, Niveau, nur unregelmässige Verben.
 - Inhalte werden generiert, also unbegrenzt.
 
@@ -73,7 +74,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 ## 4. Lernsystem
 
 - Spaced Repetition mit FSRS.
-- Bewertung mit 3 Buttons: Nochmal / Gut / Leicht. Hard nur intern (Akzentfehler).
+- Bewertung mit 3 Buttons: Nochmal / Gut / Leicht. Hard nur intern: entsteht ausschliesslich im Tipp-Modus bei Akzentfehlern. Im Modus "Aufdecken + selbst bewerten" gibt es kein Hard (gewollt).
 - Keine Limits. Eine Session endet nie automatisch.
 - Reihenfolge: zuerst fällige Karten, dann neue.
 - Neue Karten pro Tag: Einstellung, Standard 30, ohne harte Obergrenze.
@@ -85,6 +86,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
   - Phrasen: eigene ID
 - Statistik minimal: heute fällig, Trefferquote pro Zeitform und Modus-Kategorie (zeigt Schwachstellen).
 - Backup: Export/Import des Fortschritts als JSON-Datei.
+- Datenschutz gegen Speicher-Räumung (Safari): beim Start `navigator.storage.persist()` anfordern. Liegt der letzte Export mehr als 7 Tage zurück, erscheint ein nicht blockierender Hinweis "Backup erstellen".
 - Review-Log ab M1: Jede Bewertung wird als Ereignis gespeichert (Karten-ID, Modul, Bewertung, Zeitstempel, Antwortzeit). Damit lassen sich Gamification-Elemente (Streaks, Punkte, Ziele) später auch rückwirkend berechnen.
 
 ## 5. Technik
