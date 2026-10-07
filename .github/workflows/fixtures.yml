@@ -1,0 +1,34 @@
+# Generates the dev sample and the engine reference fixture (scripts/make-fixtures.ts).
+# Manual; the output is copied into the repo by hand.
+name: Data fixtures
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/**']
+    paths: ['scripts/make-fixtures.ts']
+
+permissions:
+  contents: read
+
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: .cache/downloads
+          key: downloads-${{ hashFiles('scripts/sources.ts') }}
+          restore-keys: downloads-
+      - run: node --max-old-space-size=8192 scripts/make-fixtures.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fixtures
+          path: .cache/fixtures
