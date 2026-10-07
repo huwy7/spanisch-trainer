@@ -19,4 +19,13 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
-      - run: node scripts/spike/discover.ts
+      - uses: actions/cache@v4
+        with:
+          path: .cache/spike
+          key: spike-downloads-v1
+      - run: node --max-old-space-size=8192 scripts/spike/analyze.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spike-report
+          path: .cache/spike/report.md
