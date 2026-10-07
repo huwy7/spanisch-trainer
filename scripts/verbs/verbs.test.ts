@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countMatches, germanStem, rankMeanings } from './meanings.ts';
+import { countMatches, germanForms, rankMeanings } from './meanings.ts';
 import { classify, phonetic, regularVerb } from './regular.ts';
 import { isReflexive, parseVerb, personOf, simpleTenseOf, type WiktEntry } from './wiktionary.ts';
 import { HABLAR, TENER } from '../../src/modules/conjugation/__fixtures__/hand-verbs.ts';
@@ -154,27 +154,61 @@ describe('meanings', () => {
     ['ich', 'beginne', 'morgen'],
     ['wir', 'beginnen', 'jetzt'],
     ['er', 'fing', 'an'],
+    ['das', 'ist', 'passiert'],
     ['das', 'konzert', 'setzt', 'ein'],
   ];
-
-  it('stems German words for matching', () => {
-    expect(germanStem('beginnen')).toBe('beginn');
-    expect(germanStem('sich beschweren')).toBe('beschwer');
-    expect(countMatches('beginnen', sentences)).toBe(2);
+  const corpus = (s = sentences, df: Record<string, number> = {}) => ({
+    sentences: s,
+    total: 1000,
+    df: (t: string) => df[t] ?? 1,
   });
 
-  it('ranks by co-occurrence, keeps direct translations, drops unseen reverse ones', () => {
+  it('generates German verb forms without matching unrelated words', () => {
+    const forms = germanForms('passen');
+    expect(forms.has('passt')).toBe(true);
+    expect(forms.has('gepasst')).toBe(true);
+    expect(forms.has('passiert')).toBe(false);
+    expect(germanForms('passieren').has('passiert')).toBe(true);
+    expect(germanForms('sich ändern').has('ändert')).toBe(true);
+  });
+
+  it('counts sentences with a form of the word', () => {
+    expect(countMatches('beginnen', sentences)).toBe(2);
+    expect(countMatches('passen', sentences)).toBe(0);
+    expect(countMatches('passieren', sentences)).toBe(1);
+  });
+
+  it('ranks by evidence and drops candidates without evidence', () => {
     const r = rankMeanings(
       { direct: ['anfangen'], reverse: ['anbrechen', 'beginnen', 'einsetzen'] },
-      sentences,
+      corpus(),
       { verb: true },
     );
-    expect(r).toEqual(['beginnen', 'anfangen']);
+    expect(r).toEqual(['beginnen']);
   });
 
-  it('keeps only verb-like candidates for verbs and falls back when nothing occurs', () => {
-    const r = rankMeanings({ direct: [], reverse: ['Anfang', 'starten'] }, [], { verb: true });
-    expect(r).toEqual(['starten']);
+  it('down-weights very frequent German words', () => {
+    const s = [
+      ['er', 'geht'],
+      ['sie', 'geht'],
+      ['er', 'kommt'],
+    ];
+    const r = rankMeanings(
+      { direct: [], reverse: ['gehen', 'kommen'] },
+      corpus(s, { geht: 900, kommt: 10 }),
+      {
+        verb: true,
+      },
+    );
+    expect(r).toEqual(['kommen', 'gehen']);
+  });
+
+  it('falls back to table order without evidence and keeps only verbs', () => {
+    const r = rankMeanings({ direct: [], reverse: ['treten', 'Anfang', 'ficken'] }, corpus([]), {
+      verb: true,
+      max: 1,
+    });
+    expect(r).toEqual(['treten']);
   });
 });
 

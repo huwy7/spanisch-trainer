@@ -11,7 +11,7 @@ Der Dev-Container erreicht Tatoeba und kaikki.org nicht (Netzwerk-Policy). Die A
 | 2   | Quelle der Verbformen                           | Jehle ist **CC BY-NC-SA** (nicht frei). Wiktionary stimmt zu **99,7 %** mit Jehle überein, 12'579 Verben | **Wiktionary (kaikki, CC BY-SA)**. Jehle nicht verwendet |
 | 3   | Deutsche Übersetzungen für die Häufigkeitsliste | de.wiktionary deckt **78,8 %** der Top 8000 ab. 8000 übersetzbare Lemmata bis Rang 10'659                | **de.wiktionary** (Übersetzungen + Übersetzungstabellen) |
 | 4   | Lizenz der Häufigkeitsliste                     | FrequencyWords 2018 (OpenSubtitles): **CC BY-SA 4.0**                                                    | **FrequencyWords**, lemmatisiert über en.wiktionary      |
-| 5   | Download-Grösse und Laufzeit in Actions         | ~430 MB Downloads, Analyse **61–83 s** inkl. Download                                                    | Unkritisch. Downloads per `actions/cache`                |
+| 5   | Download-Grösse und Laufzeit in Actions         | ~1,4 GB Downloads (entpackt), Analyse **61–83 s** inkl. Download                                         | Unkritisch. Downloads per `actions/cache`                |
 
 ## 1. Tatoeba ES–DE
 
@@ -74,12 +74,14 @@ Grenze der Heuristik: Homographen verfälschen die Zuordnung (z. B. _meses_ ↔ 
 | Download                          | Grösse              |
 | --------------------------------- | ------------------- |
 | Tatoeba spa / deu / spa-deu Links | 6,4 / 12,1 / 0,6 MB |
-| en.wiktionary Spanisch (kaikki)   | 95,2 MB             |
+| en.wiktionary Spanisch (kaikki)   | 1'054,6 MB¹         |
 | de.wiktionary roh (kaikki)        | 308,6 MB            |
 | FrequencyWords es_50k             | 0,7 MB              |
-| **Total**                         | **~424 MB**         |
+| **Total**                         | **~1,38 GB**        |
 
-- Erster Lauf ohne Cache: **83 s** inkl. Download. Mit Cache: **61 s**. Der Actions-Cache (407 MB) liegt weit unter dem Limit von 10 GB.
+¹ Korrektur nach M1: Der Spike hatte per HEAD-Request die komprimierte Transfergrösse (95 MB) gemessen. Entpackt sind es 1,05 GB. Die Pipeline speichert die Datei deshalb gzip-komprimiert im Cache.
+
+- Erster Lauf ohne Cache: **83 s** inkl. Download. Mit Cache: **61 s**. Volle CI mit echter Verben-Pipeline: **81 s** (davon `npm run data` 54 s). Der Actions-Cache liegt weit unter dem Limit von 10 GB.
 - In der echten Pipeline wird das de.wiktionary-Rohfile nur für die Übersetzungstabellen gebraucht. Der Speicherbedarf ist unkritisch (Runner mit 16 GB).
 
 ## Lizenzen und Attribution

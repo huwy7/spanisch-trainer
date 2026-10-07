@@ -138,7 +138,7 @@ Alle offenen Punkte sind geklärt. Zahlen und Begründung: `docs/spike-report.md
 2. Verbformen: en.wiktionary (CC BY-SA), 12'579 Verben, 99,7 % Übereinstimmung mit Fred Jehle. Jehle selbst ist CC BY-NC-SA und wird nicht verwendet.
 3. Deutsche Übersetzungen: de.wiktionary, 78,8 % der Top 8000 abgedeckt. 8000 übersetzbare Lemmata bis Rang ~10'700.
 4. Häufigkeitsliste: FrequencyWords 2018, CC BY-SA 4.0.
-5. Pipeline: ~424 MB Downloads (gecacht), 61–83 s in Actions.
+5. Pipeline: ~1,4 GB Downloads (gecacht, en.wiktionary gzip-komprimiert), ~1 min in Actions.
 
 ## 8. Roadmap
 

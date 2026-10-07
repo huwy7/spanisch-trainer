@@ -16,8 +16,12 @@ export const SOURCES = {
 
 export type SourceKey = keyof typeof SOURCES;
 
+/** Large uncompressed sources are stored gzipped in the cache (~1 GB → ~0.15 GB). */
+const COMPRESS: ReadonlySet<SourceKey> = new Set(['enWiktionary']);
+
 export function sourceFile(key: SourceKey): string {
-  return join(DOWNLOAD_DIR, `${key}-${SOURCES[key].split('/').pop()}`);
+  const name = `${key}-${SOURCES[key].split('/').pop()}`;
+  return join(DOWNLOAD_DIR, COMPRESS.has(key) ? `${name}.gz` : name);
 }
 
 /** Downloads all sources (cached) and logs their sizes. */

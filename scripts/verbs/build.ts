@@ -82,12 +82,7 @@ export async function buildVerbs(
 
   // 3. de.wiktionary: German candidates
   const direct = new Map<string, string[]>();
-  const reverse = new Map<string, string[]>();
-  const push = (m: Map<string, string[]>, k: string, v: string) => {
-    const list = m.get(k);
-    if (!list) m.set(k, [v]);
-    else if (!list.includes(v)) list.push(v);
-  };
+  const reverseRaw = new Map<string, { word: string; pos: number }[]>();
   for await (const line of lines(sourceFile('deWiktionary'))) {
     // cheap pre-filter: skip lines without Spanish content
     if (!line.includes('"es"')) continue;
@@ -96,16 +91,29 @@ export async function buildVerbs(
     if (e.lang_code === 'es') {
       const w = e.word.toLowerCase();
       if (!candidateSet.has(w)) continue;
+      const list = direct.get(w) ?? [];
       for (const t of e.translations ?? []) {
-        if ((t.lang_code ?? t.code) === 'de' && t.word) push(direct, w, t.word);
+        if ((t.lang_code ?? t.code) === 'de' && t.word && !list.includes(t.word)) list.push(t.word);
       }
+      direct.set(w, list);
     } else if (e.lang_code === 'de') {
+      // position of the Spanish word among the Spanish translations of this German entry
+      let pos = 0;
       for (const t of e.translations ?? []) {
-        const w = t.word?.toLowerCase();
-        if ((t.lang_code ?? t.code) === 'es' && w && candidateSet.has(w)) push(reverse, w, e.word);
+        if ((t.lang_code ?? t.code) !== 'es' || !t.word) continue;
+        const w = t.word.toLowerCase();
+        if (candidateSet.has(w)) {
+          const list = reverseRaw.get(w) ?? [];
+          if (!list.some((x) => x.word === e.word)) list.push({ word: e.word, pos });
+          reverseRaw.set(w, list);
+        }
+        pos++;
       }
     }
   }
+  const reverse = new Map(
+    [...reverseRaw].map(([k, list]) => [k, list.sort((a, b) => a.pos - b.pos).map((x) => x.word)]),
+  );
 
   // 4. Tatoeba: German translations of sentences containing a form of each verb
   const formToVerb = new Map<string, string>();
@@ -130,6 +138,10 @@ export async function buildVerbs(
   for await (const line of lines(sourceFile('tatoebaDeu'))) {
     const [id, , text] = line.split('\t');
     if (id && text && deIds.has(Number(id))) deText.set(Number(id), text);
+  }
+  const df = new Map<string, number>();
+  for (const text of deText.values()) {
+    for (const t of new Set(tokens(text))) df.set(t, (df.get(t) ?? 0) + 1);
   }
   const verbSentences = new Map<string, string[][]>();
   for await (const line of lines(sourceFile('tatoebaSpa'))) {
@@ -156,7 +168,7 @@ export async function buildVerbs(
   for (const inf of candidates) {
     const de = rankMeanings(
       { direct: direct.get(inf) ?? [], reverse: reverse.get(inf) ?? [] },
-      verbSentences.get(inf) ?? [],
+      { sentences: verbSentences.get(inf) ?? [], total: deText.size, df: (t) => df.get(t) ?? 0 },
       { verb: true },
     );
     if (!de.length) continue;
