@@ -22,7 +22,11 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 - Zielgerät: iPhone, Safari, als PWA auf dem Homescreen installiert. Muss offline funktionieren.
 - Sprachpaar Deutsch–Spanisch.
 - Variante: Sätze gemischt (Spanien + Lateinamerika). Konjugation **ohne vosotros**, Plural 2. Person = ustedes. Kein voseo.
-- Nur frei nutzbare Datenquellen. Pflicht-Attributionen (z.B. Tatoeba, CC-BY 2.0 FR) in der App unter "Info".
+- Nur frei nutzbare Datenquellen (keine NC-Lizenzen). Pflicht-Attributionen in der App unter "Info":
+  - Tatoeba (tatoeba.org), CC BY 2.0 FR
+  - Wiktionary (en + de) via kaikki.org, CC BY-SA 4.0 / GFDL
+  - FrequencyWords (Hermit Dave, OpenSubtitles 2018), CC BY-SA 4.0
+- Die generierten Daten (`public/data/`) stehen wegen Share-Alike unter CC BY-SA 4.0. Das wird unter "Info" ausgewiesen.
 
 ## 3. Module
 
@@ -34,6 +38,8 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 - Imperativo (afirmativo + negativo) nur für tú, usted, nosotros, ustedes. Für yo gibt es keine Imperativ-Karten. Die Personen-Liste ist pro Zeitform definiert, damit keine ungültigen Karten-IDs entstehen.
 - Filter: Zeitformen, Niveau, nur unregelmässige Verben.
 - Inhalte werden generiert, also unbegrenzt.
+- Quelle der einfachen Formen: en.wiktionary (Pipeline). Die Engine in `src/` bildet daraus zusammengesetzte Zeiten, *ir a* + Infinitiv und den verneinten Imperativ. Deutsche Bedeutung des Infinitivs aus de.wiktionary.
+- "Unregelmässig" = Abweichung von der regelmässigen Bildung (Stammwechsel oder irregulär). Reine Schreibanpassungen (buscar → busqué) gelten nicht als unregelmässig.
 
 Zeitformen und Niveau:
 
@@ -57,11 +63,12 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 ### S – Satzkarten
 - Standardrichtung DE → ES (Produktion). Umschaltbar.
 - Filter: Zeitform, Niveau.
-- Sätze mit vosotros-Formen werden beim Import entfernt.
+- Sätze mit vosotros-Formen und mit voseo (vos, tenés, sos …) werden beim Import entfernt.
 - Qualitätsfilter: 3–20 Wörter, keine Duplikate.
 
 ### V – Vokabeln
-- Häufigkeitsliste, Top ~8000 Lemmata.
+- Häufigkeitsliste (FrequencyWords, lemmatisiert über en.wiktionary), Top ~8000 Lemmata mit deutscher Übersetzung. Lemmata ohne Übersetzung entfallen.
+- Deutsche Übersetzungen aus de.wiktionary (Übersetzungen spanischer Einträge + Übersetzungstabellen deutscher Einträge). Kandidaten werden nach Häufigkeit in Tatoeba-Übersetzungen gerankt, 1–3 Wörter pro Karte. Kuratierte Overrides in `data/curated/`.
 - **Einstufung** beim ersten Start: Blöcke à 50 Wörter, Wischen "kenne ich" / "kenne ich nicht". Bekannte Wörter werden als gelernt markiert.
 - Karte DE → ES, wenn vorhanden mit Beispielsatz aus Tatoeba.
 
@@ -117,18 +124,21 @@ Branches: `main` ist der Release-Branch (Deploy auf Pages). Jeder Meilenstein ko
 - `scripts/` (Node/TS): Download → Filter → Niveau-Tagging → JSON in `public/data/`.
   - `public/data/` ist gitignored.
   - Die Pipeline läuft in der GitHub Action vor dem Build. Downloads werden gecacht.
-- `data/curated/` ist committed: Subjuntivo-Auslöser, Phrasen, ggf. unregelmässige Verben.
+- Quellen: Tatoeba (Sätze), en.wiktionary via kaikki (Verbformen, Lemmatisierung), de.wiktionary via kaikki (Übersetzungen), FrequencyWords (Häufigkeit). Details und Zahlen: `docs/spike-report.md`.
+- `data/curated/` ist committed: Subjuntivo-Auslöser, Phrasen, Übersetzungs-Overrides.
 - JSON in Chunks pro Modul/Niveau, lazy geladen. Budget gesamt < 15 MB.
 - `public/data/manifest.json` enthält einen Hash pro Chunk, damit der Service Worker gezielt aktualisiert.
 - Niveau-Heuristik für Sätze: erkannte Zeitform + Häufigkeitsrang des seltensten Worts + Satzlänge. Das ist eine Näherung, kein echtes CEFR-Niveau.
 
-## 7. Offene Punkte (klärt Spike M0b)
+## 7. Entscheide aus dem Daten-Spike (M0b)
 
-1. Anzahl DE–ES-Satzpaare in Tatoeba nach Filtern. Ziel ≥ 10'000.
-2. Quelle der Verbformen: Fred-Jehle-Datensatz (Lizenz und Vollständigkeit prüfen) oder eigene Regel-Engine + Tabelle unregelmässiger Verben.
-3. Quelle der deutschen Übersetzungen für die Häufigkeitsliste: Wiktionary-Extrakt oder Ableitung aus den Satzpaaren.
-4. Lizenz der Häufigkeitsliste.
-5. Download-Grösse und Laufzeit der Pipeline in GitHub Actions.
+Alle offenen Punkte sind geklärt. Zahlen und Begründung: `docs/spike-report.md`.
+
+1. Tatoeba DE–ES: 85'421 Satzpaare nach allen Filtern (Ziel ≥ 10'000 erfüllt).
+2. Verbformen: en.wiktionary (CC BY-SA), 12'579 Verben, 99,7 % Übereinstimmung mit Fred Jehle. Jehle selbst ist CC BY-NC-SA und wird nicht verwendet.
+3. Deutsche Übersetzungen: de.wiktionary, 78,8 % der Top 8000 abgedeckt. 8000 übersetzbare Lemmata bis Rang ~10'700.
+4. Häufigkeitsliste: FrequencyWords 2018, CC BY-SA 4.0.
+5. Pipeline: ~424 MB Downloads (gecacht), 61–83 s in Actions.
 
 ## 8. Roadmap
 
@@ -137,8 +147,8 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | # | Meilenstein | Definition of Done | Status |
 |---|---|---|---|
 | M0 | Setup | Repo, Stack, PWA, Deploy via Action. Leere App auf dem iPhone-Homescreen installiert, startet im Flugmodus. | ◐ |
-| M0b | Daten-Spike | `docs/spike-report.md` mit Zahlen und Entscheid zu jedem offenen Punkt aus §7. SPEC nachgeführt. | ☐ |
-| M1 | Konjugation | Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☐ |
+| M0b | Daten-Spike | `docs/spike-report.md` mit Zahlen und Entscheid zu jedem offenen Punkt aus §7. SPEC nachgeführt. | ☑ |
+| M1 | Konjugation | Pipeline-Teil Verben (Wiktionary) in der Action, Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz-Fixture), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☐ |
 | M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☐ |
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☐ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☐ |
