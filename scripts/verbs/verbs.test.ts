@@ -231,3 +231,13 @@ describe('validateVerbs', () => {
     ]);
   });
 });
+
+describe('curated meaning overrides', () => {
+  it('loads and validates data/curated/verb-meanings.json', async () => {
+    const { loadMeaningOverrides } = await import('./build.ts');
+    const map = await loadMeaningOverrides();
+    expect(map.get('ser')).toEqual(['sein']);
+    expect(map.get('suicidar')).toBeNull();
+    expect(map.has('_comment')).toBe(false);
+  });
+});

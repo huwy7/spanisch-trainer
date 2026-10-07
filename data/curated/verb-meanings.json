@@ -1,0 +1,9 @@
+{
+  "_comment": "Manual corrections of German verb meanings (SPEC §6). A list replaces the generated meanings; null removes the verb. Add entries when a meaning is wrong.",
+  "ser": ["sein"],
+  "haber": ["haben (Hilfsverb)", "es gibt (hay)"],
+  "volver": ["zurückkehren", "zurückkommen", "wieder tun"],
+  "interesar": ["interessieren"],
+  "capar": ["kastrieren"],
+  "suicidar": null
+}

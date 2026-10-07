@@ -4,6 +4,8 @@ import {
   type VerbEntry,
   type VerbsFile,
 } from '../../src/modules/conjugation/types.ts';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { lemmaFrequencies, parseFrequencyLine } from '../frequency.ts';
 import { lines, tokens } from '../lib/io.ts';
 import { sourceFile } from '../sources.ts';
@@ -162,15 +164,19 @@ export async function buildVerbs(
     }
   }
 
-  // 5. assemble
+  // 5. assemble (curated overrides win over generated meanings)
+  const overrides = await loadMeaningOverrides();
   const verbs: VerbEntry[] = [];
   let withMeaning = 0;
   for (const inf of candidates) {
-    const de = rankMeanings(
-      { direct: direct.get(inf) ?? [], reverse: reverse.get(inf) ?? [] },
-      { sentences: verbSentences.get(inf) ?? [], total: deText.size, df: (t) => df.get(t) ?? 0 },
-      { verb: true },
-    );
+    if (overrides.get(inf) === null) continue;
+    const de =
+      overrides.get(inf) ??
+      rankMeanings(
+        { direct: direct.get(inf) ?? [], reverse: reverse.get(inf) ?? [] },
+        { sentences: verbSentences.get(inf) ?? [], total: deText.size, df: (t) => df.get(t) ?? 0 },
+        { verb: true },
+      );
     if (!de.length) continue;
     withMeaning++;
     if (verbs.length >= VERB_LIMIT && !REQUIRED.includes(inf)) continue;
@@ -212,4 +218,27 @@ export function validateVerbs(file: VerbsFile): string[] {
     }
   }
   return errors;
+}
+
+const OVERRIDES_FILE = join(
+  import.meta.dirname,
+  '..',
+  '..',
+  'data',
+  'curated',
+  'verb-meanings.json',
+);
+
+/** data/curated/verb-meanings.json: list replaces meanings, null removes the verb. */
+export async function loadMeaningOverrides(): Promise<Map<string, string[] | null>> {
+  const raw = JSON.parse(await readFile(OVERRIDES_FILE, 'utf8')) as Record<string, unknown>;
+  const map = new Map<string, string[] | null>();
+  for (const [k, v] of Object.entries(raw)) {
+    if (k.startsWith('_')) continue;
+    if (v !== null && !(Array.isArray(v) && v.length && v.every((x) => typeof x === 'string'))) {
+      throw new Error(`verb-meanings.json: invalid entry for ${k}`);
+    }
+    map.set(k, v as string[] | null);
+  }
+  return map;
 }
