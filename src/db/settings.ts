@@ -20,6 +20,10 @@ export interface Settings {
   /** Vocabulary placement: index of the next word, and whether it is finished. */
   vocabPlacementIndex: number;
   vocabPlacementDone: boolean;
+  /** Phrases: direction, categories (empty = all) and the regional variants besides general. */
+  phraseDirection: 'de-es' | 'es-de';
+  phraseCategories: string[];
+  phraseRegions: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +38,9 @@ export const DEFAULT_SETTINGS: Settings = {
   sentenceTenses: [],
   vocabPlacementIndex: 0,
   vocabPlacementDone: false,
+  phraseDirection: 'de-es',
+  phraseCategories: [],
+  phraseRegions: ['es', 'latam'],
 };
 
 export async function loadSettings(db: AppDB): Promise<Settings> {

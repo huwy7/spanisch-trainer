@@ -43,6 +43,6 @@ export const MODULES: readonly ModuleInfo[] = [
     title: 'Phrasen',
     description: 'Smalltalk, Höflichkeit, Umgangssprache',
     milestone: 'M5',
-    available: false,
+    available: true,
   },
 ];

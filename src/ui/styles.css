@@ -1123,3 +1123,9 @@ code {
 .solution-sentence .muted {
   margin: 0;
 }
+
+/* ---------------------------------------------------------------- phrases (P) */
+
+.phrase-note {
+  margin: var(--space-2) 0 0;
+}
