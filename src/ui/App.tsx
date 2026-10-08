@@ -1,6 +1,7 @@
 import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
 import { ModeModule } from '../modules/mode/ui/ModeModule.tsx';
 import { SentenceModule } from '../modules/sentences/ui/SentenceModule.tsx';
+import { PhraseModule } from '../modules/phrases/ui/PhraseModule.tsx';
 import { VocabModule } from '../modules/vocab/ui/VocabModule.tsx';
 import { isTabRoute, MODULE_ROUTE, ROUTES, type TabRoute } from './routes.ts';
 import { BookIcon, ChartIcon, InfoIcon } from './icons.tsx';
@@ -33,6 +34,7 @@ export function App() {
         {route === 'modus' && <ModeModule onExit={() => setRoute('lernen')} />}
         {route === 'saetze' && <SentenceModule onExit={() => setRoute('lernen')} />}
         {route === 'vokabeln' && <VocabModule onExit={() => setRoute('lernen')} />}
+        {route === 'phrasen' && <PhraseModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
       {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabRoute} onSelect={setRoute} />}

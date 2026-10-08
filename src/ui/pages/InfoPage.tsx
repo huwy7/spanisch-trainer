@@ -162,7 +162,8 @@ export function InfoPage() {
         ))}
       </ul>
       <p className="muted small">
-        Die aus diesen Quellen erzeugten Lerndaten stehen unter CC BY-SA 4.0.
+        Die aus diesen Quellen erzeugten Lerndaten stehen unter CC BY-SA 4.0. Phrasen,
+        Modus-Auslöser und Zeitform-Erklärungen sind eigene, kuratierte Inhalte.
       </p>
 
       <h2 className="section-title">Version</h2>

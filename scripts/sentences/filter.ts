@@ -33,8 +33,14 @@ export function words(text: string): string[] {
 const isName = (w: string, i: number) => i > 0 && /^\p{Lu}/u.test(w);
 
 export function rejectSentence(es: string, lex: FilterLexicon): RejectReason | null {
+  const n = words(es).length;
+  if (n < 3 || n > 20) return 'length';
+  return regionalForm(es, lex);
+}
+
+/** vosotros or voseo in a text of any length (SPEC §2). */
+export function regionalForm(es: string, lex: FilterLexicon): 'vosotros' | 'voseo' | null {
   const ws = words(es);
-  if (ws.length < 3 || ws.length > 20) return 'length';
   const lower = ws.map((w) => w.toLowerCase());
   if (lower.some((w, i) => VOSOTROS_WORDS.has(w) || (!isName(ws[i]!, i) && lex.vosotros.has(w)))) {
     return 'vosotros';
