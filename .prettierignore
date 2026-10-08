@@ -1,0 +1,8 @@
+dist/
+dev-dist/
+public/data/
+package-lock.json
+CLAUDE.md
+SPEC.md
+data/dev/*.json
+src/**/__fixtures__/*.json

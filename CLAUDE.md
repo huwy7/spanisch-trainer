@@ -16,6 +16,7 @@
 - `npm run build` – Produktionsbuild
 - `npm run test` – Vitest
 - `npm run data` – Datenpipeline (schreibt nach `public/data/`)
+- `DATA_OFFLINE=1 npm run data` – Dev-Sample statt Quellen (der Cloud-Container erreicht Tatoeba/kaikki nicht)
 
 ## Harte Regeln
 - Keine KI- oder API-Aufrufe zur Laufzeit. Keine Requests ausser zur eigenen Pages-Domain.
