@@ -4,6 +4,12 @@ import { parseCardId } from '../../modules/conjugation/engine.ts';
 import { TENSE_IDS, TENSES, type TenseId } from '../../modules/conjugation/tenses.ts';
 import { loadMode } from '../../data/mode.ts';
 import { MODE_CATEGORIES, type ModeCategory } from '../../modules/mode/types.ts';
+import { MODULES } from '../../modules/registry.ts';
+import { activity, forecast, moduleStats, type ModuleStat } from '../../srs/stats.ts';
+import { BarChart } from '../BarChart.tsx';
+
+const ACTIVITY_DAYS = 14;
+const FORECAST_DAYS = 7;
 
 interface TenseStat {
   tense: TenseId;
@@ -19,8 +25,12 @@ interface RateStat {
 }
 
 interface Stats {
+  now: number;
   dueNow: number;
   reviewsToday: number;
+  modules: ModuleStat[];
+  activity: number[];
+  forecast: number[];
   byTense: TenseStat[];
   byCategory: RateStat[];
 }
@@ -69,6 +79,15 @@ async function computeStats(now: number): Promise<Stats> {
     counts.set(ref.tense, s);
   }
   return {
+    now,
+    modules: moduleStats(
+      MODULES.map((m) => m.id),
+      cards,
+      reviews,
+      now,
+    ),
+    activity: activity(reviews, now, ACTIVITY_DAYS),
+    forecast: forecast(cards, now, FORECAST_DAYS),
     dueNow: cards.filter((c) => c.srs.reps > 0 && c.srs.due <= endOfDay.getTime()).length,
     reviewsToday: reviews.filter((r) => r.ts >= startOfDay.getTime()).length,
     byTense: TENSE_IDS.map((t) => counts.get(t))
@@ -99,6 +118,48 @@ function RateList({ rows }: { rows: RateStat[] }) {
   );
 }
 
+const dayAt = (now: number, offset: number) => {
+  const d = new Date(now);
+  d.setDate(d.getDate() + offset);
+  return d;
+};
+/** Short weekday, e.g. "Mo". */
+const dayLabel = (now: number, offset: number) =>
+  dayAt(now, offset).toLocaleDateString('de-CH', { weekday: 'short' }).replace('.', '');
+/** Weekday and date, e.g. "Mi, 8.10.". */
+const dateLabel = (now: number, offset: number) =>
+  dayAt(now, offset).toLocaleDateString('de-CH', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'numeric',
+  });
+const countLabel = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+function ModuleTable({ rows }: { rows: ModuleStat[] }) {
+  return (
+    <table className="module-table">
+      <thead>
+        <tr>
+          <th scope="col">Modul</th>
+          <th scope="col">gelernt</th>
+          <th scope="col">heute fällig</th>
+          <th scope="col">Quote</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.module}>
+            <th scope="row">{MODULES.find((m) => m.id === r.module)!.title}</th>
+            <td>{r.learned}</td>
+            <td>{r.dueToday}</td>
+            <td>{r.reviews ? `${Math.round((100 * r.correct) / r.reviews)} %` : '–'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export function StatsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   useEffect(() => {
@@ -123,9 +184,40 @@ export function StatsPage() {
             </div>
           </div>
 
+          <h2 className="section-title">Module</h2>
+          <ModuleTable rows={stats.modules} />
+
+          <h2 className="section-title">Aktivität · letzte {ACTIVITY_DAYS} Tage</h2>
+          <BarChart
+            title={`Antworten pro Tag, letzte ${ACTIVITY_DAYS} Tage`}
+            values={stats.activity}
+            axis={stats.activity.map((_, i) =>
+              i === stats.activity.length - 1
+                ? 'heute'
+                : i === 0
+                  ? dayLabel(stats.now, i - ACTIVITY_DAYS + 1)
+                  : '',
+            )}
+            describe={(i) =>
+              `${dateLabel(stats.now, i - ACTIVITY_DAYS + 1)}: ${countLabel(stats.activity[i]!, 'Antwort', 'Antworten')}`
+            }
+            labels="peak"
+          />
+
+          <h2 className="section-title">Vorschau · fällig in den nächsten {FORECAST_DAYS} Tagen</h2>
+          <BarChart
+            title={`Fällige Karten pro Tag, nächste ${FORECAST_DAYS} Tage`}
+            values={stats.forecast}
+            axis={stats.forecast.map((_, i) => (i === 0 ? 'heute' : dayLabel(stats.now, i)))}
+            describe={(i) =>
+              `${dateLabel(stats.now, i)}: ${countLabel(stats.forecast[i]!, 'Karte', 'Karten')} fällig${i === 0 ? ' (inkl. überfällige)' : ''}`
+            }
+            labels="all"
+          />
+
           <h2 className="section-title">Trefferquote pro Zeitform</h2>
           {stats.byTense.length === 0 ? (
-            <p className="muted">Noch keine Antworten in der Konjugation.</p>
+            <p className="muted small">Noch keine Antworten in der Konjugation.</p>
           ) : (
             <RateList
               rows={stats.byTense.map((t) => ({
@@ -141,7 +233,7 @@ export function StatsPage() {
 
           <h2 className="section-title">Modus wählen: Trefferquote pro Kategorie</h2>
           {stats.byCategory.length === 0 ? (
-            <p className="muted">Noch keine Antworten im Modul „Modus wählen“.</p>
+            <p className="muted small">Noch keine Antworten im Modul „Modus wählen“.</p>
           ) : (
             <RateList rows={stats.byCategory} />
           )}

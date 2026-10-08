@@ -1,6 +1,7 @@
 import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
 import { ModeModule } from '../modules/mode/ui/ModeModule.tsx';
 import { SentenceModule } from '../modules/sentences/ui/SentenceModule.tsx';
+import { MixModule } from '../modules/mix/ui/MixModule.tsx';
 import { PhraseModule } from '../modules/phrases/ui/PhraseModule.tsx';
 import { VocabModule } from '../modules/vocab/ui/VocabModule.tsx';
 import { isTabRoute, MODULE_ROUTE, ROUTES, type TabRoute } from './routes.ts';
@@ -26,7 +27,10 @@ export function App() {
     <div className="app">
       <main className={inModule ? 'app-main app-main-module' : 'app-main'}>
         {route === 'lernen' && (
-          <LearnPage onOpen={(id) => MODULE_ROUTE[id] && setRoute(MODULE_ROUTE[id])} />
+          <LearnPage
+            onOpen={(id) => MODULE_ROUTE[id] && setRoute(MODULE_ROUTE[id])}
+            onMix={() => setRoute('mischen')}
+          />
         )}
         {route === 'statistik' && <StatsPage />}
         {route === 'info' && <InfoPage />}
@@ -35,6 +39,7 @@ export function App() {
         {route === 'saetze' && <SentenceModule onExit={() => setRoute('lernen')} />}
         {route === 'vokabeln' && <VocabModule onExit={() => setRoute('lernen')} />}
         {route === 'phrasen' && <PhraseModule onExit={() => setRoute('lernen')} />}
+        {route === 'mischen' && <MixModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
       {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabRoute} onSelect={setRoute} />}

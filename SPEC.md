@@ -89,7 +89,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Keine Limits. Eine Session endet nie automatisch.
 - Reihenfolge: zuerst fällige Karten, dann neue.
 - Neue Karten pro Tag: Einstellung, Standard 30, ohne harte Obergrenze.
-- Modus "Alles mischen" zieht aus allen Modulen.
+- Modus "Alles mischen" zieht aus allen Modulen. Jedes Modul liefert seine Karten mit den im Modul eingestellten Filtern. Fällige Karten kommen zuerst, neue Karten abwechselnd aus den Modulen. Das Tageslimit für neue Karten gilt im Mischmodus für die Summe über alle Module.
 - Stabile Karten-IDs:
   - Konjugation: `verb:tense:person`
   - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
@@ -158,5 +158,5 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☑ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☑ |
 | M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ◐ |
-| M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☐ |
+| M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☑ |
 | M7 | Gamification (optional) | Nur bei Bedarf. Belohnende Elemente (z.B. Streaks, Tagesziel, Meilensteine) auf Basis des Review-Logs, ohne Limits oder Sperren. Umfang wird vor dem Start in der SPEC definiert. | ☐ |

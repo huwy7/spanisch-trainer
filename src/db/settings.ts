@@ -24,6 +24,8 @@ export interface Settings {
   phraseDirection: 'de-es' | 'es-de';
   phraseCategories: string[];
   phraseRegions: string[];
+  /** Mixed mode: modules to draw from. */
+  mixModules: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -41,6 +43,7 @@ export const DEFAULT_SETTINGS: Settings = {
   phraseDirection: 'de-es',
   phraseCategories: [],
   phraseRegions: ['es', 'latam'],
+  mixModules: ['K', 'M', 'S', 'V', 'P'],
 };
 
 export async function loadSettings(db: AppDB): Promise<Settings> {
