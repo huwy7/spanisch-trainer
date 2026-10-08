@@ -16,6 +16,9 @@ export interface Wiktionary {
   names: Set<string>;
   /** Complete conjugation tables of non-reflexive verbs. */
   verbs: Map<string, ParsedVerb>;
+  /** Forms that are unambiguously vosotros / voseo (for the sentence filter, SPEC §2). */
+  vosotros: Set<string>;
+  voseo: Set<string>;
 }
 
 export interface SentencePair {
@@ -37,7 +40,15 @@ export async function loadWiktionary(): Promise<Wiktionary> {
     formLemmas: new Map(),
     names: new Set(),
     verbs: new Map(),
+    vosotros: new Set(),
+    voseo: new Set(),
   };
+  // per form: seen as vosotros / voseo / anything else
+  const flags = new Map<string, number>();
+  const VOS = 1;
+  const VOSEO = 2;
+  const OTHER = 4;
+  const flag = (form: string, f: number) => flags.set(form, (flags.get(form) ?? 0) | f);
   const addForm = (form: string, lemma: string) => {
     const list = w.formLemmas.get(form);
     if (!list) w.formLemmas.set(form, [lemma]);
@@ -59,15 +70,34 @@ export async function loadWiktionary(): Promise<Wiktionary> {
     w.lemmas.add(word);
     for (const f of e.forms ?? []) {
       const form = f.form?.toLowerCase();
-      if (form && !form.includes(' ')) addForm(form, word);
+      if (!form || form.includes(' ')) continue;
+      addForm(form, word);
+      const tags = f.tags ?? [];
+      flag(form, isVosotrosTags(tags) ? VOS : isVoseoTags(tags) ? VOSEO : OTHER);
     }
     if (e.pos === 'verb' && !isReflexive(word) && !w.verbs.has(word)) {
       const v = parseVerb(e);
       if (v) w.verbs.set(word, v);
     }
   }
+  for (const [form, f] of flags) {
+    const ambiguous = f & OTHER || w.lemmas.has(form) || w.names.has(form);
+    if (ambiguous) continue;
+    if (f & VOS) w.vosotros.add(form);
+    else if (f & VOSEO) w.voseo.add(form);
+  }
   return w;
 }
+
+/** Tags of a vosotros form (2nd person plural, not the formal ustedes). */
+export const isVosotrosTags = (tags: readonly string[]) =>
+  tags.includes('second-person') &&
+  tags.includes('plural') &&
+  !tags.includes('formal') &&
+  !tags.includes('third-person');
+
+export const isVoseoTags = (tags: readonly string[]) =>
+  tags.includes('vos-form') || tags.includes('voseo');
 
 /** Spanish sentences with their first direct German translation. */
 export async function loadTatoeba(): Promise<SentencePair[]> {
