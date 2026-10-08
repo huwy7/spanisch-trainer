@@ -107,6 +107,26 @@ describe('trigger rules and gap detection', () => {
     });
   });
 
+  it('after a fixed-mood trigger, ignores readings in the other mood (vengas: venir, not vengar)', () => {
+    // fake verb "tengar" whose indicative collides with tener's subjunctive, equally frequent
+    const tengar = {
+      ...HAND_VERBS[1]!,
+      inf: 'tengar',
+      forms: {
+        ...HAND_VERBS[1]!.forms,
+        pres: ['tengo', 'tengas', 'tenga', 'tengamos', 'tengan'],
+        subj_pres: ['tengue', 'tengues', 'tengue', 'tenguemos', 'tenguen'],
+      },
+    } as (typeof HAND_VERBS)[number];
+    const even = buildAnalyzer([...HAND_VERBS, tengar], () => 10);
+    const r = analyzeSentence('Quiero que tengas suerte.', rules, even);
+    expect('reject' in r ? r.reject : [r.gap.inf, r.gap.mood]).toEqual(['tener', 'subj']);
+    // with a 'both' trigger the ambiguity remains
+    expect(analyzeSentence('Cuando tengas tiempo, ven.', rules, even)).toEqual({
+      reject: 'ambiguous',
+    });
+  });
+
   it('reports sentences without trigger', () => {
     expect(analyze('Tengo un perro.')).toEqual({ reject: 'no-trigger' });
   });

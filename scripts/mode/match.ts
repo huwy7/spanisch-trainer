@@ -118,7 +118,13 @@ function tokenize(s: string, offset: number): Token[] {
  * clitics and subject pronouns in between. haber + participle forms one gap.
  * Any other word in between rejects the sentence (precision over recall).
  */
-export function findGap(es: string, triggerEnd: number, an: Analyzer): GapResult {
+export function findGap(
+  es: string,
+  triggerEnd: number,
+  an: Analyzer,
+  /** Mood required by the trigger: readings in other moods are grammatically impossible. */
+  expected?: Mood,
+): GapResult {
   const toks = tokenize(es.slice(triggerEnd), triggerEnd);
   let i = 0;
   while (
@@ -130,7 +136,9 @@ export function findGap(es: string, triggerEnd: number, an: Analyzer): GapResult
     i++;
   const tok = toks[i];
   if (!tok) return { reject: 'no-verb' };
-  const analyses = preferFrequent(an.finite(tok.lower), an);
+  const all = an.finite(tok.lower);
+  const fitting = expected ? all.filter((a) => moodOf(a.tense) === expected) : [];
+  const analyses = preferFrequent(fitting.length ? fitting : all, an);
   if (!analyses.length) return { reject: 'no-verb' };
 
   // haber + participle (he/había/haya/hubiera … + -ado/-ido)
@@ -196,7 +204,8 @@ export function analyzeSentence(
 ): MatchResult {
   const trigger = findTrigger(es, rules);
   if (!trigger) return { reject: 'no-trigger' };
-  const gap = findGap(es, trigger.end, an);
+  const expected = trigger.rule.mood === 'both' ? undefined : trigger.rule.mood;
+  const gap = findGap(es, trigger.end, an, expected);
   if ('reject' in gap) return gap;
   const { rule } = trigger;
   if (rule.mood !== 'both' && rule.mood !== gap.mood) return { reject: 'mood' };
