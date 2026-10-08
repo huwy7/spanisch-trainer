@@ -49,23 +49,19 @@ export function genderOf(e: WiktEntry): Gender | undefined {
   return undefined;
 }
 
-/** Closed-class and adverb entries: a word that is one of these is not a card as a noun. */
-const FUNCTION_POS = new Set([
-  'adv',
-  'prep',
-  'pron',
-  'conj',
-  'det',
-  'article',
-  'particle',
-  'intj',
-  'num',
-  'contraction',
-]);
+/** Closed word classes: a word that is one of these is not a card as a noun. */
+const FUNCTION_POS = new Set(['prep', 'pron', 'conj', 'det', 'article']);
+
+/** Noun entry that only names a letter (de = D, te = T, ese = S): not the word's meaning. */
+export const isLetterName = (e: WiktEntry) =>
+  e.pos === 'noun' &&
+  !!e.senses?.length &&
+  e.senses.every((s) => s.glosses?.some((g) => /\bname of the .*letter\b/i.test(g)));
 
 /**
  * Whether a later Wiktionary entry replaces the stored word class. The first entry wins, except
- * that a function word beats a noun reading (letter names: de, te, ese; el no).
+ * that a closed-class word beats a noun reading (me, se). Interjections and adverbs do not
+ * (hombre, ojo stay nouns).
  */
 export const replacesInfo = (prev: LemmaInfo, nextPos: string) =>
   prev.pos === 'noun' && FUNCTION_POS.has(nextPos);
@@ -122,7 +118,7 @@ export async function loadWiktionary(): Promise<Wiktionary> {
     w.lemmas.add(word);
     const pos = POS[e.pos] ?? 'other';
     const prev = w.info.get(word);
-    if (!prev || replacesInfo(prev, e.pos)) {
+    if (!isLetterName(e) && (!prev || replacesInfo(prev, e.pos))) {
       w.info.set(word, pos === 'noun' ? { pos, gender: genderOf(e) } : { pos });
     }
     for (const f of e.forms ?? []) {

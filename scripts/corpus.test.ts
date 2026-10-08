@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { genderOf, replacesInfo } from './corpus.ts';
+import { genderOf, isLetterName, replacesInfo } from './corpus.ts';
 
 describe('genderOf', () => {
   it('reads the es-noun head template', () => {
@@ -24,10 +24,28 @@ describe('genderOf', () => {
 
 describe('replacesInfo', () => {
   it('lets a function word beat a noun reading, otherwise the first entry wins', () => {
-    expect(replacesInfo({ pos: 'noun', gender: 'f' }, 'prep')).toBe(true); // de (letter name)
-    expect(replacesInfo({ pos: 'noun' }, 'adv')).toBe(true); // no
+    expect(replacesInfo({ pos: 'noun', gender: 'f' }, 'pron')).toBe(true); // me
+    expect(replacesInfo({ pos: 'noun' }, 'intj')).toBe(false); // hombre
+    expect(replacesInfo({ pos: 'noun' }, 'adv')).toBe(false);
     expect(replacesInfo({ pos: 'noun' }, 'adj')).toBe(false);
     expect(replacesInfo({ pos: 'adj' }, 'noun')).toBe(false);
     expect(replacesInfo({ pos: 'other' }, 'pron')).toBe(false);
+  });
+});
+
+describe('isLetterName', () => {
+  it('detects noun entries that only name a letter', () => {
+    const gloss = (g: string) => ({ glosses: [g] });
+    expect(
+      isLetterName({ pos: 'noun', senses: [gloss('The name of the Latin-script letter D/d.')] }),
+    ).toBe(true);
+    expect(
+      isLetterName({
+        pos: 'noun',
+        senses: [gloss('The name of the Latin-script letter T/t.'), gloss('tea')],
+      }),
+    ).toBe(false);
+    expect(isLetterName({ pos: 'prep', senses: [gloss('of, from')] })).toBe(false);
+    expect(isLetterName({ pos: 'noun', senses: [] })).toBe(false);
   });
 });

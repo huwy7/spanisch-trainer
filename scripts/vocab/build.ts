@@ -9,7 +9,7 @@ import { germanForms, rankMeanings, type MeaningKind } from '../verbs/meanings.t
 
 /** SPEC §3 V: top ~8000 lemmas with a German translation. */
 export const VOCAB_LIMIT = 8000;
-const CANDIDATES = 12000;
+const CANDIDATES = 14000;
 const SENTENCES_PER_LEMMA = 300;
 const EXAMPLE_WORDS: [number, number] = [4, 12];
 /** Below this share of sentences confirming a meaning, a homograph reading is dropped. */

@@ -74,7 +74,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Deutsche Übersetzungen aus de.wiktionary (Übersetzungen spanischer Einträge + Übersetzungstabellen deutscher Einträge). Kandidaten werden nach Häufigkeit in Tatoeba-Übersetzungen gerankt, 1–3 Wörter pro Karte. Kuratierte Overrides in `data/curated/`.
 - **Einstufung** beim ersten Start: Blöcke à 50 Wörter, Wischen "kenne ich" / "kenne ich nicht". Bekannte Wörter werden als gelernt markiert.
 - Karte DE → ES, wenn vorhanden mit Beispielsatz aus Tatoeba.
-- Wortart und Genus aus en.wiktionary. Das Genus erscheint als Tag (m/f/mf) statt als Artikel, weil der Artikel nicht immer dem Genus folgt (_el agua_). Funktionswörter haben Vorrang vor Nomen-Lesarten (Buchstabennamen wie _de_, _te_). Ist ein Wort auch eine Form eines anderen Lemmas (_era_ → _ser_), wird seine eigene Lesart nur übernommen, wenn mindestens 5 % der deutschen Übersetzungen sie bestätigen.
+- Wortart und Genus aus en.wiktionary. Das Genus erscheint als Tag (m/f/mf) statt als Artikel, weil der Artikel nicht immer dem Genus folgt (_el agua_). Buchstabennamen (_de_ = D, _ese_ = S) zählen nicht als Wortart, und Pronomen, Präpositionen, Konjunktionen und Artikel haben Vorrang vor Nomen-Lesarten. Ist ein Wort auch eine Form eines anderen Lemmas (_era_ → _ser_), wird seine eigene Lesart nur übernommen, wenn mindestens 5 % der deutschen Übersetzungen sie bestätigen.
 
 ### P – Phrasen
 - Einmalig kuratierte Liste mit 300–500 Einträgen, als JSON im Repo.
