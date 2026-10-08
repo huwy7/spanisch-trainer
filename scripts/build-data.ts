@@ -8,6 +8,7 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { buildManifest } from './manifest.ts';
 import { ensureSources } from './sources.ts';
+import { loadCorpus } from './corpus.ts';
 import { buildVerbs, validateVerbs } from './verbs/build.ts';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -24,7 +25,8 @@ if (offline) {
   await copyFile(DEV_SAMPLE, join(OUT_DIR, 'verbs.json'));
 } else {
   await ensureSources(log);
-  const { file, stats } = await buildVerbs(log);
+  const corpus = await loadCorpus(log);
+  const { file, stats } = await buildVerbs(corpus);
   const errors = validateVerbs(file);
   if (errors.length) {
     console.error(errors.slice(0, 50).join('\n'));

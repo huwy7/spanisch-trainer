@@ -14,6 +14,7 @@ import { TENSES, type TenseId } from '../src/modules/conjugation/tenses.ts';
 import { PERSONS, type Person, type VerbsFile } from '../src/modules/conjugation/types.ts';
 import { download, lines } from './lib/io.ts';
 import { DOWNLOAD_DIR, ensureSources } from './sources.ts';
+import { loadCorpus } from './corpus.ts';
 import { buildVerbs } from './verbs/build.ts';
 
 const JEHLE =
@@ -39,7 +40,7 @@ const REFERENCE_SIZE = 320;
 
 const log = (s: string) => console.log(`fixtures: ${s}`);
 await ensureSources(log);
-const { file } = await buildVerbs(log);
+const { file } = await buildVerbs(await loadCorpus(log));
 
 // Dev sample: top 30 + every 50th rank, always with the auxiliaries.
 const sample = file.verbs.filter(
