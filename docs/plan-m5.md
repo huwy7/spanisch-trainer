@@ -38,3 +38,11 @@ Validierung (Schema, IDs, Duplikate, vosotros/voseo), die echte Datei, Filter un
 ## Nutzer-Prüfung
 
 Eine Stichprobe von ~40 Einträgen über alle Kategorien und Regionen in `docs/phrases-review.md`. M5 bleibt ◐, bis der Nutzer sie geprüft hat.
+
+## Ergebnis
+
+- 432 Phrasen: Smalltalk 88 · Höflichkeit 74 · Reaktionen 89 · Alltag 109 · Umgangssprachlich 72. Davon allgemein 325, Spanien 57, Lateinamerika 50.
+- Bei Unterschieden je Region gibt es Paare (_coger el metro_ / _tomar el camión_, _me he perdido_ / _me perdí_), damit beide Varianten lernbar sind.
+- Vulgäres ist als solches markiert (_¡Hostia!_, _Ni de coña_). Sonst bleibt der Slang höflich-umgangssprachlich.
+- Die Validierung läuft in `npm run test` gegen die echte Datei und in der Pipeline zusätzlich mit den Wiktionary-Sets.
+- **Offen:** die Stichprobe durch den Nutzer (`docs/phrases-review.md`).
