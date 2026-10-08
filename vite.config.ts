@@ -46,7 +46,12 @@ export default defineConfig({
       },
       workbox: {
         // App shell + verb and mode data (~1 MB). Larger chunks get lazy loading in M3.
-        globPatterns: ['**/*.{js,css,html,svg,png}', 'data/verbs.json', 'data/mode.json'],
+        globPatterns: [
+          '**/*.{js,css,html,svg,png}',
+          'data/verbs.json',
+          'data/mode.json',
+          'data/vocab.json',
+        ],
         navigateFallback: 'index.html',
         // Sentence chunks (M3) are not precached: hashed names → CacheFirst; the manifest
         // says which names are current → NetworkFirst. The app prefetches all chunks online.

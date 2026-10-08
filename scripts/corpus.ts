@@ -16,10 +16,55 @@ export interface Wiktionary {
   names: Set<string>;
   /** Complete conjugation tables of non-reflexive verbs. */
   verbs: Map<string, ParsedVerb>;
+  /** Word class (and gender of nouns) of each lemma: verbs with a conjugation table are verbs,
+   * otherwise the first (main) Wiktionary entry wins, function words before nouns. */
+  info: Map<string, LemmaInfo>;
   /** Forms that are unambiguously vosotros / voseo (for the sentence filter, SPEC §2). */
   vosotros: Set<string>;
   voseo: Set<string>;
 }
+
+export type WordClass = 'noun' | 'verb' | 'adj' | 'adv' | 'other';
+export type Gender = 'm' | 'f' | 'mf';
+
+export interface LemmaInfo {
+  pos: WordClass;
+  gender?: Gender;
+}
+
+const POS: Record<string, WordClass> = { noun: 'noun', verb: 'verb', adj: 'adj', adv: 'adv' };
+
+/** Grammatical gender of a Spanish noun entry (head template arg or expansion "casa f"). */
+export function genderOf(e: WiktEntry): Gender | undefined {
+  const tpl = e.head_templates?.find((t) => t.name?.startsWith('es-noun'));
+  const arg = tpl?.args?.['1'] ?? tpl?.args?.g;
+  const fromText = /^\S+ (m or f|mf|m|f)\b/.exec(tpl?.expansion ?? '')?.[1];
+  const g = (arg ?? fromText ?? '').replace(/-p$/, '');
+  if (g === 'm' || g === 'f') return g;
+  if (g === 'mf' || g === 'm or f' || g === 'mfbysense') return 'mf';
+  const tags = e.tags ?? [];
+  if (tags.includes('masculine') && tags.includes('feminine')) return 'mf';
+  if (tags.includes('masculine')) return 'm';
+  if (tags.includes('feminine')) return 'f';
+  return undefined;
+}
+
+/** Closed word classes: a word that is one of these is not a card as a noun. */
+const FUNCTION_POS = new Set(['prep', 'pron', 'conj', 'det', 'article']);
+
+/** Noun entry that only names a letter (de = D, te = T, ese = S): not the word's meaning. */
+export const isLetterName = (e: WiktEntry) =>
+  e.pos === 'noun' &&
+  !!e.senses?.length &&
+  e.senses.every((s) => s.glosses?.some((g) => /\bname of the .*letter\b/i.test(g)));
+
+/**
+ * Whether a later Wiktionary entry replaces the stored word class. The first entry wins, except
+ * that a closed-class word beats a noun reading (me, se). Interjections and adverbs do not
+ * (hombre, ojo stay nouns).
+ */
+export const replacesInfo = (prev: LemmaInfo, nextPos: string) =>
+  prev.pos === 'noun' && FUNCTION_POS.has(nextPos);
 
 export interface SentencePair {
   /** Tatoeba ID of the Spanish sentence (stable card ID for sentence cards). */
@@ -42,6 +87,7 @@ export async function loadWiktionary(): Promise<Wiktionary> {
     formLemmas: new Map(),
     names: new Set(),
     verbs: new Map(),
+    info: new Map(),
     vosotros: new Set(),
     voseo: new Set(),
   };
@@ -70,6 +116,11 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       continue;
     }
     w.lemmas.add(word);
+    const pos = POS[e.pos] ?? 'other';
+    const prev = w.info.get(word);
+    if (!isLetterName(e) && (!prev || replacesInfo(prev, e.pos))) {
+      w.info.set(word, pos === 'noun' ? { pos, gender: genderOf(e) } : { pos });
+    }
     for (const f of e.forms ?? []) {
       const form = f.form?.toLowerCase();
       if (!form || form.includes(' ')) continue;
@@ -82,6 +133,8 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       if (v) w.verbs.set(word, v);
     }
   }
+  // infinitives used as nouns (el poder, el ser) are secondary: the verb reading wins
+  for (const inf of w.verbs.keys()) w.info.set(inf, { pos: 'verb' });
   for (const [form, f] of flags) {
     const ambiguous = f & OTHER || w.lemmas.has(form) || w.names.has(form);
     if (ambiguous) continue;

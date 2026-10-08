@@ -14,6 +14,8 @@ export interface WiktEntry {
   senses?: { glosses?: string[]; tags?: string[]; form_of?: { word: string }[] }[];
   forms?: { form: string; tags?: string[] }[];
   translations?: { lang_code?: string; code?: string; word?: string }[];
+  tags?: string[];
+  head_templates?: { name?: string; args?: Record<string, string>; expansion?: string }[];
 }
 
 export interface ParsedVerb {

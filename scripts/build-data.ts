@@ -15,7 +15,9 @@ import { buildSentences, validateSentences } from './sentences/build.ts';
 import { hashContent } from './manifest.ts';
 import { LEVELS, type Level } from '../src/modules/conjugation/tenses.ts';
 import type { SentenceChunk } from '../src/modules/sentences/types.ts';
-import { buildVerbs, validateVerbs } from './verbs/build.ts';
+import { loadGerman, type GermanCandidates } from './german.ts';
+import { verbCandidates, buildVerbs, validateVerbs } from './verbs/build.ts';
+import { buildVocab, validateVocab, vocabCandidates } from './vocab/build.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const OUT_DIR = join(ROOT, 'public', 'data');
@@ -27,13 +29,15 @@ const t0 = performance.now();
 await mkdir(OUT_DIR, { recursive: true });
 
 let corpus: Corpus | null = null;
+let german: GermanCandidates | null = null;
 if (offline) {
   log('DATA_OFFLINE=1 → using dev sample (not for production)');
   await copyFile(DEV_SAMPLE, join(OUT_DIR, 'verbs.json'));
 } else {
   await ensureSources(log);
   corpus = await loadCorpus(log);
-  const { file, stats } = await buildVerbs(corpus);
+  german = await loadGerman(new Set([...verbCandidates(corpus), ...vocabCandidates(corpus)]));
+  const { file, stats } = await buildVerbs(corpus, german);
   const errors = validateVerbs(file);
   if (errors.length) {
     console.error(errors.slice(0, 50).join('\n'));
@@ -59,6 +63,31 @@ for (const c of fromTatoeba.filter((_, i) => i % step === 0).slice(0, 30)) {
   log(`mode sample: ${c.category}/${c.mood} (${c.inf}) ${marked}`);
 }
 await writeFile(join(OUT_DIR, 'mode.json'), JSON.stringify(mode.file));
+
+// Module V: vocabulary (offline: committed dev sample)
+const DEV_VOCAB = join(ROOT, 'data', 'dev', 'vocab.sample.json');
+if (corpus && german) {
+  const vocab = await buildVocab(corpus, german);
+  const vocabErrors = validateVocab(vocab.file, corpus.wikt);
+  if (vocabErrors.length) {
+    console.error(vocabErrors.slice(0, 50).join('\n'));
+    throw new Error(`vocab.json: ${vocabErrors.length} errors`);
+  }
+  log(`vocab: ${JSON.stringify(vocab.stats)}`);
+  log(`vocab homographs dropped: ${vocab.homographs.slice(0, 80).join(', ')}`);
+  const step = Math.floor(vocab.file.words.length / 25) || 1;
+  for (const w of vocab.file.words.filter((_, i) => i % step === 0)) {
+    log(
+      `vocab sample: #${w.rank} ${w.lemma} (${w.pos}${w.gender ? ' ' + w.gender : ''}) = ${w.de.join(' / ')}${w.ex ? ` · ${w.ex[1]}` : ''}`,
+    );
+  }
+  await writeFile(join(OUT_DIR, 'vocab.json'), JSON.stringify(vocab.file));
+} else if (existsSync(DEV_VOCAB)) {
+  await copyFile(DEV_VOCAB, join(OUT_DIR, 'vocab.json'));
+} else {
+  log('no dev vocab sample → empty vocab.json');
+  await writeFile(join(OUT_DIR, 'vocab.json'), JSON.stringify({ version: 1, words: [] }));
+}
 
 // Module S: sentence chunks per level, hashed file names (lazy loaded, immutable cache).
 const DEV_SENTENCES = join(ROOT, 'data', 'dev', 'sentences.sample.json');
@@ -87,6 +116,7 @@ for (const f of await readdir(OUT_DIR)) if (f.startsWith('sentences-')) await rm
 const chunks: Record<string, string> = {
   'verbs.json': await readFile(join(OUT_DIR, 'verbs.json'), 'utf8'),
   'mode.json': await readFile(join(OUT_DIR, 'mode.json'), 'utf8'),
+  'vocab.json': await readFile(join(OUT_DIR, 'vocab.json'), 'utf8'),
 };
 for (const level of LEVELS) {
   const content = JSON.stringify(sentenceChunks[level]);

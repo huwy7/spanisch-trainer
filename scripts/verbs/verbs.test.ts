@@ -182,7 +182,7 @@ describe('meanings', () => {
     const r = rankMeanings(
       { direct: ['anfangen'], reverse: ['anbrechen', 'beginnen', 'einsetzen'] },
       corpus(),
-      { verb: true },
+      { kind: 'verb' },
     );
     expect(r).toEqual(['beginnen']);
   });
@@ -197,15 +197,21 @@ describe('meanings', () => {
       { direct: [], reverse: ['gehen', 'kommen'] },
       corpus(s, { geht: 900, kommt: 10 }),
       {
-        verb: true,
+        kind: 'verb',
       },
     );
     expect(r).toEqual(['kommen', 'gehen']);
   });
 
+  it('filters candidates by word class', () => {
+    const c = { direct: [], reverse: ['Haus', 'hausen', 'häuslich'] };
+    expect(rankMeanings(c, corpus([]), { kind: 'noun' })).toEqual(['Haus']);
+    expect(rankMeanings(c, corpus([]), { kind: 'other' })).toEqual(['hausen', 'häuslich']);
+  });
+
   it('falls back to table order without evidence and keeps only verbs', () => {
     const r = rankMeanings({ direct: [], reverse: ['treten', 'Anfang', 'ficken'] }, corpus([]), {
-      verb: true,
+      kind: 'verb',
       max: 1,
     });
     expect(r).toEqual(['treten']);

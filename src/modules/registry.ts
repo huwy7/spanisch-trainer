@@ -36,7 +36,7 @@ export const MODULES: readonly ModuleInfo[] = [
     title: 'Vokabeln',
     description: 'Die häufigsten Wörter',
     milestone: 'M4',
-    available: false,
+    available: true,
   },
   {
     id: 'P',

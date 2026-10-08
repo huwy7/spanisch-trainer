@@ -50,3 +50,26 @@ export async function recordAnswer(
   });
   return next;
 }
+
+/**
+ * Placement test (SPEC §3 V): marks cards as learned with an FSRS state like after "Leicht",
+ * without a review-log entry (statistics and gamification count real answers only).
+ * Cards that already have progress are left untouched.
+ */
+export async function markKnown(
+  db: AppDB,
+  cardIds: readonly string[],
+  module: ModuleId,
+  now: number,
+): Promise<number> {
+  return db.transaction('rw', db.cards, async () => {
+    const existing = new Set(
+      (await db.cards.bulkGet([...cardIds])).filter(Boolean).map((c) => c!.id),
+    );
+    const fresh = cardIds.filter((id) => !existing.has(id));
+    await db.cards.bulkPut(
+      fresh.map((id) => ({ id, module, srs: review(undefined, 'easy', now) })),
+    );
+    return fresh.length;
+  });
+}
