@@ -47,5 +47,6 @@
   "su": ["sein", "ihr", "Ihr"],
   "este": ["dieser"],
   "ese": ["jener", "dieser da"],
-  "hay": ["es gibt"]
+  "hay": ["es gibt"],
+  "podar": null
 }

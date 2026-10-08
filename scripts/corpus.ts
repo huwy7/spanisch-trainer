@@ -16,7 +16,8 @@ export interface Wiktionary {
   names: Set<string>;
   /** Complete conjugation tables of non-reflexive verbs. */
   verbs: Map<string, ParsedVerb>;
-  /** Word class (and gender of nouns) of each lemma; first entry wins, nouns preferred. */
+  /** Word class (and gender of nouns) of each lemma: verbs with a conjugation table are verbs,
+   * otherwise the first (main) Wiktionary entry wins. */
   info: Map<string, LemmaInfo>;
   /** Forms that are unambiguously vosotros / voseo (for the sentence filter, SPEC §2). */
   vosotros: Set<string>;
@@ -98,9 +99,8 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       continue;
     }
     w.lemmas.add(word);
-    const pos = POS[e.pos] ?? 'other';
-    const known = w.info.get(word);
-    if (!known || (known.pos !== 'noun' && pos === 'noun')) {
+    if (!w.info.has(word)) {
+      const pos = POS[e.pos] ?? 'other';
       w.info.set(word, pos === 'noun' ? { pos, gender: genderOf(e) } : { pos });
     }
     for (const f of e.forms ?? []) {
@@ -115,6 +115,8 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       if (v) w.verbs.set(word, v);
     }
   }
+  // infinitives used as nouns (el poder, el ser) are secondary: the verb reading wins
+  for (const inf of w.verbs.keys()) w.info.set(inf, { pos: 'verb' });
   for (const [form, f] of flags) {
     const ambiguous = f & OTHER || w.lemmas.has(form) || w.names.has(form);
     if (ambiguous) continue;
