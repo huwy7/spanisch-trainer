@@ -36,3 +36,11 @@ Richtung, Niveau-Chips (A2/B1/B2), optionaler Zeitform-Filter (ohne Auswahl gelt
 ## Tests
 
 Zeitform-Erkennung (einfach, zusammengesetzt, _ir a_, Homographen, Nomen-Ausschluss), Niveau-Berechnung, Bitmaske, Chunk-Aufbau, Duplikate, Filter in der App.
+
+## Ergebnis (Abschluss M3)
+
+- 85'408 Satzkarten (A2 28'787 · B1 30'545 · B2 26'076). 94 % davon mit mindestens einer erkannten Zeitform.
+- Chunks 2,2 / 3,0 / 2,9 MB, zusammen mit dem Precache (1,4 MB) unter dem Budget von 15 MB.
+- Die Stichproben-Prüfung hat drei Fehler der Zeitform-Erkennung gefunden, alle behoben: Eigennamen (Irán ≠ ir, Futur), Kollision mit dem Imperativ (está), seltene Verben (fuimos ≠ fuir).
+- Bewusste Kompromisse: Reine Imperativsätze („Habla más despacio“) werden als Präsens markiert. Formen, die als anderes Wort häufiger sind („como“), werden gar nicht markiert.
+- Offline: Beim ersten Besuch übernimmt der Service Worker sofort (`clientsClaim`) und lädt alle Chunks vor. Getestet: Neuladen im Flugmodus, Wechsel auf ein anderes Niveau.

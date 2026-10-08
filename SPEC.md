@@ -65,6 +65,8 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Standardrichtung DE → ES (Produktion). Umschaltbar.
 - Filter: Zeitform, Niveau.
 - Sätze mit vosotros-Formen und mit voseo (vos, tenés, sos …) werden beim Import entfernt.
+- Antwort: Aufdecken + selbst bewerten. Pro Satz werden die erkannten Zeitformen angezeigt (mit ⓘ-Info).
+- Daten: Chunks pro Niveau, nicht im Precache; werden online im Hintergrund vorgeladen und danach offline genutzt.
 - Qualitätsfilter: 3–20 Wörter, keine Duplikate.
 
 ### V – Vokabeln
@@ -152,7 +154,7 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M0b | Daten-Spike | `docs/spike-report.md` mit Zahlen und Entscheid zu jedem offenen Punkt aus §7. SPEC nachgeführt. | ☑ |
 | M1 | Konjugation | Pipeline-Teil Verben (Wiktionary) in der Action, Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz-Fixture), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☑ |
 | M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☑ |
-| M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☐ |
+| M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☑ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☐ |
 | M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ☐ |
 | M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☐ |
