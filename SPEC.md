@@ -74,6 +74,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Deutsche Übersetzungen aus de.wiktionary (Übersetzungen spanischer Einträge + Übersetzungstabellen deutscher Einträge). Kandidaten werden nach Häufigkeit in Tatoeba-Übersetzungen gerankt, 1–3 Wörter pro Karte. Kuratierte Overrides in `data/curated/`.
 - **Einstufung** beim ersten Start: Blöcke à 50 Wörter, Wischen "kenne ich" / "kenne ich nicht". Bekannte Wörter werden als gelernt markiert.
 - Karte DE → ES, wenn vorhanden mit Beispielsatz aus Tatoeba.
+- Wortart und Genus aus en.wiktionary. Das Genus erscheint als Tag (m/f/mf) statt als Artikel, weil der Artikel nicht immer dem Genus folgt (_el agua_). Funktionswörter haben Vorrang vor Nomen-Lesarten (Buchstabennamen wie _de_, _te_). Ist ein Wort auch eine Form eines anderen Lemmas (_era_ → _ser_), wird seine eigene Lesart nur übernommen, wenn mindestens 5 % der deutschen Übersetzungen sie bestätigen.
 
 ### P – Phrasen
 - Einmalig kuratierte Liste mit 300–500 Einträgen, als JSON im Repo.
@@ -155,7 +156,7 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M1 | Konjugation | Pipeline-Teil Verben (Wiktionary) in der Action, Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz-Fixture), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☑ |
 | M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☑ |
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☑ |
-| M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☐ |
+| M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☑ |
 | M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ☐ |
 | M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☐ |
 | M7 | Gamification (optional) | Nur bei Bedarf. Belohnende Elemente (z.B. Streaks, Tagesziel, Meilensteine) auf Basis des Review-Logs, ohne Limits oder Sperren. Umfang wird vor dem Start in der SPEC definiert. | ☐ |

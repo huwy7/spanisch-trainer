@@ -5,7 +5,7 @@ Ziel (SPEC §8): Häufigkeitsliste, Einstufung, Beispielsätze.
 ## Daten (Pipeline)
 
 - **Liste:** Lemmata nach Häufigkeit (FrequencyWords, lemmatisiert). Die Top ~8000 **mit** deutscher Übersetzung kommen in die Liste, Eigennamen sind ausgeschlossen.
-- **Wortart und Genus** aus en.wiktionary. Nomen werden mit Artikel gezeigt (_la casa_, _el agua_ nur bei eindeutigem Genus).
+- **Wortart und Genus** aus en.wiktionary. Das Genus wird als Tag (m/f/mf) gezeigt, nicht als Artikel (siehe Ergebnis).
 - **Deutsch:** de.wiktionary, direkte Übersetzung und Übersetzungstabellen. Ranking wie bei den Verben über Tatoeba-Kookkurrenz mit IDF, passend zur Wortart gefiltert (Nomen gross, Verben auf -en). 1–3 Wörter pro Karte. Kuratierte Overrides in `data/curated/vocab-meanings.json` (z. B. _y → und_).
 - **Beispielsatz:** Kürzester geeigneter Tatoeba-Satz (4–12 Wörter, gemeinsamer Satzfilter), der eine Form des Lemmas enthält. Mit Attribution.
 - **de.wiktionary** wird nur einmal gelesen, gemeinsam für Verben und Vokabeln (Refactor).
@@ -13,7 +13,7 @@ Ziel (SPEC §8): Häufigkeitsliste, Einstufung, Beispielsätze.
 
 ## Karte
 
-- **DE → ES:** vorne die deutschen Bedeutungen und die Wortart, hinten das spanische Wort (mit Artikel), Beispielsatz ES/DE und Quelle.
+- **DE → ES:** vorne die deutschen Bedeutungen und die Wortart, hinten das spanische Wort (mit Genus-Tag), Beispielsatz ES/DE und Quelle.
 - Aufdecken + selbst bewerten.
 - **Karten-ID:** `v:<lemma>` (SPEC §4 präzisiert).
 
