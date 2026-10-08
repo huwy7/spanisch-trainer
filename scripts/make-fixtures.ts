@@ -16,6 +16,7 @@ import { download, lines } from './lib/io.ts';
 import { DOWNLOAD_DIR, ensureSources } from './sources.ts';
 import { loadCorpus } from './corpus.ts';
 import { buildVerbs } from './verbs/build.ts';
+import { buildSentences } from './sentences/build.ts';
 import { loadCurated } from './mode/build.ts';
 import { MODEL_VERBS, TENSE_INFO } from '../src/modules/conjugation/tenseInfo.ts';
 
@@ -42,7 +43,8 @@ const REFERENCE_SIZE = 320;
 
 const log = (s: string) => console.log(`fixtures: ${s}`);
 await ensureSources(log);
-const { file } = await buildVerbs(await loadCorpus(log));
+const corpus = await loadCorpus(log);
+const { file } = await buildVerbs(corpus);
 
 // Dev sample: top 30 + every 50th rank, plus verbs needed offline: auxiliaries, model verbs
 // and irregular models of the tense info, and all verbs of the curated mode sentences.
@@ -121,5 +123,22 @@ const outDir = join(import.meta.dirname, '..', '.cache', 'fixtures');
 await mkdir(outDir, { recursive: true });
 await writeFile(join(outDir, 'verbs.sample.json'), JSON.stringify(sampleFile));
 await writeFile(join(outDir, 'reference.json'), JSON.stringify(reference));
+// Sentence sample: first 40 rows per level (new-card order) + 40 spread over the rest.
+const { chunks: sentenceChunks } = buildSentences(corpus);
+const sentenceSample = Object.fromEntries(
+  Object.entries(sentenceChunks).map(([level, chunk]) => {
+    const rest = chunk.rows.slice(40);
+    const step = Math.max(1, Math.floor(rest.length / 40));
+    return [
+      level,
+      {
+        ...chunk,
+        rows: [...chunk.rows.slice(0, 40), ...rest.filter((_, i) => i % step === 0).slice(0, 40)],
+      },
+    ];
+  }),
+);
+await writeFile(join(outDir, 'sentences.sample.json'), JSON.stringify(sentenceSample));
 console.log(`BEGIN_SAMPLE${JSON.stringify(sampleFile)}END_SAMPLE`);
+console.log(`BEGIN_SENTENCES${JSON.stringify(sentenceSample)}END_SENTENCES`);
 console.log(`BEGIN_REFERENCE${JSON.stringify(reference)}END_REFERENCE`);

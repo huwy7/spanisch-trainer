@@ -1050,3 +1050,29 @@ code {
 .btn-mood {
   font-size: 18px;
 }
+
+/* ---------------------------------------------------------------- sentences (S) */
+
+.solution-sentence {
+  text-align: left;
+}
+
+.solution-sentence .sentence {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.tense-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  font-size: 13px;
+}

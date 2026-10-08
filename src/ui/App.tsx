@@ -1,5 +1,6 @@
 import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
 import { ModeModule } from '../modules/mode/ui/ModeModule.tsx';
+import { SentenceModule } from '../modules/sentences/ui/SentenceModule.tsx';
 import type { ModuleId } from '../modules/registry.ts';
 import { BookIcon, ChartIcon, InfoIcon } from './icons.tsx';
 import { InfoPage } from './pages/InfoPage.tsx';
@@ -9,9 +10,9 @@ import { TabBar, type Tab } from './TabBar.tsx';
 import { UpdatePrompt } from './UpdatePrompt.tsx';
 import { useHashTab } from './useHashTab.ts';
 
-const ROUTES = ['lernen', 'statistik', 'info', 'konjugation', 'modus'] as const;
+const ROUTES = ['lernen', 'statistik', 'info', 'konjugation', 'modus', 'saetze'] as const;
 type Route = (typeof ROUTES)[number];
-type TabId = Exclude<Route, 'konjugation' | 'modus'>;
+type TabId = Exclude<Route, 'konjugation' | 'modus' | 'saetze'>;
 
 const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'lernen', label: 'Lernen', icon: <BookIcon /> },
@@ -19,11 +20,15 @@ const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'info', label: 'Info', icon: <InfoIcon /> },
 ];
 
-const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = { K: 'konjugation', M: 'modus' };
+const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = {
+  K: 'konjugation',
+  M: 'modus',
+  S: 'saetze',
+};
 
 export function App() {
   const [route, setRoute] = useHashTab(ROUTES, 'lernen');
-  const inModule = route === 'konjugation' || route === 'modus';
+  const inModule = route === 'konjugation' || route === 'modus' || route === 'saetze';
 
   return (
     <div className="app">
@@ -35,6 +40,7 @@ export function App() {
         {route === 'info' && <InfoPage />}
         {route === 'konjugation' && <ConjugationModule onExit={() => setRoute('lernen')} />}
         {route === 'modus' && <ModeModule onExit={() => setRoute('lernen')} />}
+        {route === 'saetze' && <SentenceModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
       {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabId} onSelect={setRoute} />}

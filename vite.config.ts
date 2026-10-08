@@ -48,7 +48,24 @@ export default defineConfig({
         // App shell + verb and mode data (~1 MB). Larger chunks get lazy loading in M3.
         globPatterns: ['**/*.{js,css,html,svg,png}', 'data/verbs.json', 'data/mode.json'],
         navigateFallback: 'index.html',
+        // Sentence chunks (M3) are not precached: hashed names → CacheFirst; the manifest
+        // says which names are current → NetworkFirst. The app prefetches all chunks online.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => /\/data\/sentences-[^/]+\.json$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: { cacheName: 'sentence-chunks', expiration: { maxEntries: 12 } },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.endsWith('/data/manifest.json'),
+            handler: 'NetworkFirst',
+            options: { cacheName: 'data-manifest', networkTimeoutSeconds: 3 },
+          },
+        ],
         cleanupOutdatedCaches: true,
+        // first install: control the page at once (runtime caches work on the first visit);
+        // later updates still wait for the user (registerType 'prompt', no skipWaiting)
+        clientsClaim: true,
       },
     }),
   ],

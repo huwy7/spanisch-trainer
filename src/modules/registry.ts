@@ -29,7 +29,7 @@ export const MODULES: readonly ModuleInfo[] = [
     title: 'Satzkarten',
     description: 'Ganze Sätze übersetzen',
     milestone: 'M3',
-    available: false,
+    available: true,
   },
   {
     id: 'V',
