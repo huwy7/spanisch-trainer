@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { genderOf } from './corpus.ts';
+import { genderOf, replacesInfo } from './corpus.ts';
 
 describe('genderOf', () => {
   it('reads the es-noun head template', () => {
@@ -19,5 +19,15 @@ describe('genderOf', () => {
     ).toBe('mf');
     expect(genderOf({ tags: ['masculine'] })).toBe('m');
     expect(genderOf({})).toBeUndefined();
+  });
+});
+
+describe('replacesInfo', () => {
+  it('lets a function word beat a noun reading, otherwise the first entry wins', () => {
+    expect(replacesInfo({ pos: 'noun', gender: 'f' }, 'prep')).toBe(true); // de (letter name)
+    expect(replacesInfo({ pos: 'noun' }, 'adv')).toBe(true); // no
+    expect(replacesInfo({ pos: 'noun' }, 'adj')).toBe(false);
+    expect(replacesInfo({ pos: 'adj' }, 'noun')).toBe(false);
+    expect(replacesInfo({ pos: 'other' }, 'pron')).toBe(false);
   });
 });

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Corpus } from '../corpus.ts';
-import { betterExample, loadVocabOverrides, validateVocab, vocabCandidates } from './build.ts';
+import {
+  betterExample,
+  isHomographReading,
+  loadVocabOverrides,
+  meaningCoverage,
+  validateVocab,
+  vocabCandidates,
+} from './build.ts';
 
 const lex = { vosotros: new Set(['tenéis']), voseo: new Set(['tenés']) };
 
@@ -59,5 +66,23 @@ describe('vocab pipeline', () => {
     const o = await loadVocabOverrides();
     expect(o.get('y')).toEqual(['und']);
     expect(o.has('_comment')).toBe(false);
+  });
+
+  it('measures how many German sentences confirm a meaning', () => {
+    const sentences = [
+      ['das', 'haus', 'ist', 'groß'],
+      ['er', 'war', 'müde'],
+      ['im', 'hause'],
+    ];
+    expect(meaningCoverage(['Haus'], sentences)).toBeCloseTo(1 / 3);
+    expect(meaningCoverage(['Zeitalter', 'Ära'], sentences)).toBe(0);
+    expect(meaningCoverage(['wichtig sein'], [['das', 'ist', 'wichtig']])).toBe(1);
+    expect(meaningCoverage(['Haus'], [])).toBe(0);
+  });
+
+  it('drops homograph readings without confirmation, keeps plain words', () => {
+    expect(isHomographReading('era', ['era', 'ser'], 0.01)).toBe(true);
+    expect(isHomographReading('casa', ['casa', 'casar'], 0.6)).toBe(false);
+    expect(isHomographReading('mesa', ['mesa'], 0)).toBe(false);
   });
 });

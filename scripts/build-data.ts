@@ -74,6 +74,7 @@ if (corpus && german) {
     throw new Error(`vocab.json: ${vocabErrors.length} errors`);
   }
   log(`vocab: ${JSON.stringify(vocab.stats)}`);
+  log(`vocab homographs dropped: ${vocab.homographs.slice(0, 80).join(', ')}`);
   const step = Math.floor(vocab.file.words.length / 25) || 1;
   for (const w of vocab.file.words.filter((_, i) => i % step === 0)) {
     log(

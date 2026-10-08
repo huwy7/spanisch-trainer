@@ -17,7 +17,7 @@ export interface Wiktionary {
   /** Complete conjugation tables of non-reflexive verbs. */
   verbs: Map<string, ParsedVerb>;
   /** Word class (and gender of nouns) of each lemma: verbs with a conjugation table are verbs,
-   * otherwise the first (main) Wiktionary entry wins. */
+   * otherwise the first (main) Wiktionary entry wins, function words before nouns. */
   info: Map<string, LemmaInfo>;
   /** Forms that are unambiguously vosotros / voseo (for the sentence filter, SPEC §2). */
   vosotros: Set<string>;
@@ -48,6 +48,27 @@ export function genderOf(e: WiktEntry): Gender | undefined {
   if (tags.includes('feminine')) return 'f';
   return undefined;
 }
+
+/** Closed-class and adverb entries: a word that is one of these is not a card as a noun. */
+const FUNCTION_POS = new Set([
+  'adv',
+  'prep',
+  'pron',
+  'conj',
+  'det',
+  'article',
+  'particle',
+  'intj',
+  'num',
+  'contraction',
+]);
+
+/**
+ * Whether a later Wiktionary entry replaces the stored word class. The first entry wins, except
+ * that a function word beats a noun reading (letter names: de, te, ese; el no).
+ */
+export const replacesInfo = (prev: LemmaInfo, nextPos: string) =>
+  prev.pos === 'noun' && FUNCTION_POS.has(nextPos);
 
 export interface SentencePair {
   /** Tatoeba ID of the Spanish sentence (stable card ID for sentence cards). */
@@ -99,8 +120,9 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       continue;
     }
     w.lemmas.add(word);
-    if (!w.info.has(word)) {
-      const pos = POS[e.pos] ?? 'other';
+    const pos = POS[e.pos] ?? 'other';
+    const prev = w.info.get(word);
+    if (!prev || replacesInfo(prev, e.pos)) {
       w.info.set(word, pos === 'noun' ? { pos, gender: genderOf(e) } : { pos });
     }
     for (const f of e.forms ?? []) {

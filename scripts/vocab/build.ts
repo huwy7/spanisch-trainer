@@ -5,13 +5,15 @@ import type { Corpus } from '../corpus.ts';
 import type { GermanCandidates } from '../german.ts';
 import { tokens } from '../lib/io.ts';
 import { rejectSentence, words } from '../sentences/filter.ts';
-import { rankMeanings, type MeaningKind } from '../verbs/meanings.ts';
+import { germanForms, rankMeanings, type MeaningKind } from '../verbs/meanings.ts';
 
 /** SPEC §3 V: top ~8000 lemmas with a German translation. */
 export const VOCAB_LIMIT = 8000;
 const CANDIDATES = 12000;
 const SENTENCES_PER_LEMMA = 300;
 const EXAMPLE_WORDS: [number, number] = [4, 12];
+/** Below this share of sentences confirming a meaning, a homograph reading is dropped. */
+export const MIN_COVERAGE = 0.05;
 
 /** Most frequent lemmas that can become vocabulary cards (no names, letters only). */
 export function vocabCandidates(corpus: Corpus): string[] {
@@ -24,6 +26,27 @@ export function vocabCandidates(corpus: Corpus): string[] {
 
 const kindOf = (pos: string): MeaningKind =>
   pos === 'noun' ? 'noun' : pos === 'verb' ? 'verb' : 'other';
+
+/** Share of the German sentences that contain a form of one of the meanings. */
+export function meaningCoverage(
+  de: readonly string[],
+  sentences: readonly (readonly string[])[],
+): number {
+  if (!sentences.length) return 0;
+  const forms = new Set(de.flatMap((m) => m.split(/\s+/)).flatMap((w) => [...germanForms(w)]));
+  return sentences.filter((toks) => toks.some((t) => forms.has(t))).length / sentences.length;
+}
+
+/**
+ * A word that is also an inflected form of another candidate (era → ser, son → ser, vale → valer,
+ * primera → primero) is mostly read as that form. Its own entry only becomes a card when the
+ * German translations confirm the meaning (casa = Haus stays, era = Zeitalter goes).
+ */
+export const isHomographReading = (
+  lemma: string,
+  otherLemmas: readonly string[],
+  coverage: number,
+) => otherLemmas.some((l) => l !== lemma) && coverage < MIN_COVERAGE;
 
 /**
  * Example sentence choice: shortest filtered Tatoeba sentence (4–12 words) in which a token maps
@@ -42,7 +65,7 @@ export function betterExample(
 export async function buildVocab(
   corpus: Corpus,
   german: GermanCandidates,
-): Promise<{ file: VocabFile; stats: Record<string, number> }> {
+): Promise<{ file: VocabFile; homographs: string[]; stats: Record<string, number> }> {
   const { wikt } = corpus;
   const candidates = vocabCandidates(corpus);
   const set = new Set(candidates);
@@ -64,13 +87,18 @@ export async function buildVocab(
     const exampleOk = n >= EXAMPLE_WORDS[0] && n <= EXAMPLE_WORDS[1] && !rejectSentence(p.es, wikt);
     for (const tok of new Set(tokens(p.es))) {
       const ls = lemmasOf(tok);
+      // function words only by their own form (aes is no example for the preposition a)
+      const exampleLemmas = [...ls].filter((l) => {
+        const pos = wikt.info.get(l)?.pos;
+        return tok === l || pos === 'noun' || pos === 'verb' || pos === 'adj';
+      });
       for (const l of ls) {
         const list = evidence.get(l) ?? [];
         if (list.length < SENTENCES_PER_LEMMA) list.push(deTokens);
         evidence.set(l, list);
       }
-      if (exampleOk && ls.size === 1) {
-        const l = [...ls][0]!;
+      if (exampleOk && ls.size === 1 && exampleLemmas.length === 1) {
+        const l = exampleLemmas[0]!;
         examples.set(l, betterExample(examples.get(l), [p.id, p.es, p.de]));
       }
     }
@@ -79,6 +107,7 @@ export async function buildVocab(
   const overrides = await loadVocabOverrides();
   const out: VocabEntry[] = [];
   let withMeaning = 0;
+  const homographs: string[] = [];
   for (const lemma of candidates) {
     if (out.length >= VOCAB_LIMIT) break;
     if (overrides.get(lemma) === null) continue;
@@ -96,6 +125,13 @@ export async function buildVocab(
       );
     if (!de.length) continue;
     withMeaning++;
+    if (!overrides.has(lemma) && info.pos !== 'verb') {
+      const coverage = meaningCoverage(de, evidence.get(lemma) ?? []);
+      if (isHomographReading(lemma, [...lemmasOf(lemma)], coverage)) {
+        homographs.push(`${lemma}=${de[0]} (${(coverage * 100).toFixed(0)} %)`);
+        continue;
+      }
+    }
     const ex = examples.get(lemma);
     out.push({
       lemma,
@@ -108,10 +144,12 @@ export async function buildVocab(
   }
   return {
     file: { version: 1, words: out },
+    homographs,
     stats: {
       candidates: candidates.length,
       exported: out.length,
       withMeaning,
+      homographs: homographs.length,
       withExample: out.filter((w) => w.ex).length,
       nouns: out.filter((w) => w.pos === 'noun').length,
       nounsWithGender: out.filter((w) => w.gender).length,
