@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { InfoButton } from '../../../ui/Sheet.tsx';
 import { loadVerbs, type VerbData } from '../../../data/verbs.ts';
 import type { AnswerMode } from '../../../db/settings.ts';
 import { updateSetting, useSettings } from '../../../ui/useSettings.ts';
@@ -6,6 +7,7 @@ import { cardId, generateCards, interleave } from '../engine.ts';
 import { LEVELS, TENSE_IDS, TENSES, tensesOfLevel, type TenseId } from '../tenses.ts';
 import { useSession } from '../useSession.ts';
 import { CardView } from './CardView.tsx';
+import { TenseInfoSheet } from './TenseInfoSheet.tsx';
 
 interface Props {
   onExit: () => void;
@@ -53,6 +55,7 @@ export function ConjugationModule({ onExit }: Props) {
       onlyIrregular={settings.conjugationOnlyIrregular}
       mode={settings.answerMode}
       verbCount={data.verbs.length}
+      lookup={data.lookup}
       onStart={() => setRunning(true)}
       onExit={onExit}
     />
@@ -66,12 +69,14 @@ interface SetupProps {
   onlyIrregular: boolean;
   mode: AnswerMode;
   verbCount: number;
+  lookup: VerbData['lookup'];
   onStart: () => void;
   onExit: () => void;
 }
 
-function Setup({ tenses, onlyIrregular, mode, verbCount, onStart, onExit }: SetupProps) {
+function Setup({ tenses, onlyIrregular, mode, verbCount, lookup, onStart, onExit }: SetupProps) {
   const selected = new Set(tenses);
+  const [info, setInfo] = useState<TenseId | null>(null);
   const toggle = (id: TenseId) => {
     const next = new Set(selected);
     if (next.has(id)) next.delete(id);
@@ -117,15 +122,17 @@ function Setup({ tenses, onlyIrregular, mode, verbCount, onStart, onExit }: Setu
             </div>
             <div className="chips">
               {ids.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="chip"
-                  aria-pressed={selected.has(id)}
-                  onClick={() => toggle(id)}
-                >
-                  {TENSES[id].label}
-                </button>
+                <span key={id} className="chip-group">
+                  <button
+                    type="button"
+                    className="chip"
+                    aria-pressed={selected.has(id)}
+                    onClick={() => toggle(id)}
+                  >
+                    {TENSES[id].label}
+                  </button>
+                  <InfoButton label={`Info: ${TENSES[id].label}`} onClick={() => setInfo(id)} />
+                </span>
               ))}
             </div>
           </div>
@@ -161,6 +168,8 @@ function Setup({ tenses, onlyIrregular, mode, verbCount, onStart, onExit }: Setu
           </button>
         ))}
       </div>
+
+      {info && <TenseInfoSheet tense={info} lookup={lookup} onClose={() => setInfo(null)} />}
 
       <div className="action-bar action-bar-fixed">
         <button

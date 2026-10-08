@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { AnswerMode } from '../../../db/settings.ts';
+import { InfoButton } from '../../../ui/Sheet.tsx';
 import type { Answer } from '../../../srs/scheduler.ts';
 import { conjugate, gradeAnswer, parseCardId, type Grade, type VerbLookup } from '../engine.ts';
 import { personLabel, TENSES } from '../tenses.ts';
 import { AccentBar } from './AccentBar.tsx';
 import { RatingBar } from './RatingBar.tsx';
+import { TenseInfoSheet } from './TenseInfoSheet.tsx';
 
 interface Props {
   id: string;
@@ -30,6 +32,7 @@ export function CardView({ id, isNew, mode, lookup, onAnswer }: Props) {
   const [input, setInput] = useState('');
   const [grade, setGrade] = useState<Grade | null>(null);
   const [busy, setBusy] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -81,6 +84,7 @@ export function CardView({ id, isNew, mode, lookup, onAnswer }: Props) {
         <div className="prompt-meta">
           <span className={`level level-${tense.level}`}>{tense.level}</span>
           <span>{tense.label}</span>
+          <InfoButton label={`Info: ${tense.label}`} onClick={() => setInfoOpen(true)} />
           {isNew && <span className="badge-new">neu</span>}
           {verb.irregular && <span className="badge-irr">unregelmässig</span>}
         </div>
@@ -92,6 +96,15 @@ export function CardView({ id, isNew, mode, lookup, onAnswer }: Props) {
           {personLabel(ref.person, ref.tense)}
         </div>
       </div>
+
+      {infoOpen && (
+        <TenseInfoSheet
+          tense={ref.tense}
+          lookup={lookup}
+          currentVerb={revealed ? verb : undefined}
+          onClose={() => setInfoOpen(false)}
+        />
+      )}
 
       {revealed && (
         <div className={`solution ${grade ? `solution-${grade}` : ''}`} aria-live="polite">
