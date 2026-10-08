@@ -5,7 +5,7 @@ import type { AnswerMode } from '../../../db/settings.ts';
 import { updateSetting, useSettings } from '../../../ui/useSettings.ts';
 import { cardId, generateCards, interleave } from '../engine.ts';
 import { LEVELS, TENSE_IDS, TENSES, tensesOfLevel, type TenseId } from '../tenses.ts';
-import { useSession } from '../useSession.ts';
+import { useSession } from '../../../srs/useSession.ts';
 import { CardView } from './CardView.tsx';
 import { TenseInfoSheet } from './TenseInfoSheet.tsx';
 
