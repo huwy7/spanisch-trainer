@@ -47,6 +47,14 @@ export function countMatches(word: string, sentences: readonly (readonly string[
 
 const looksLikeGermanVerb = (w: string) => /^(sich\s+)?[a-zäöüß]+(en|ern|eln|n)$/.test(w);
 
+/** Which German candidates fit the Spanish word class. */
+export type MeaningKind = 'verb' | 'noun' | 'other';
+const FITS: Record<MeaningKind, (w: string) => boolean> = {
+  verb: looksLikeGermanVerb,
+  noun: (w) => /^[A-ZÄÖÜ]/.test(w),
+  other: (w) => /^[a-zäöüß]/.test(w),
+};
+
 /**
  * Up to `max` meanings, best first.
  * Score: co-occurrence in German translations × IDF (frequent words like "sein" weigh less).
@@ -56,7 +64,7 @@ const looksLikeGermanVerb = (w: string) => /^(sich\s+)?[a-zäöüß]+(en|ern|eln
 export function rankMeanings(
   c: MeaningCandidates,
   corpus: Corpus,
-  opts: { verb: boolean; max?: number },
+  opts: { kind: MeaningKind; max?: number },
 ): string[] {
   const max = opts.max ?? 3;
   const seen = new Set<string>();
@@ -65,7 +73,7 @@ export function rankMeanings(
     const w = word.trim();
     const key = w.toLowerCase();
     if (!w || seen.has(key)) return;
-    if (opts.verb && !looksLikeGermanVerb(w)) return;
+    if (!FITS[opts.kind](w)) return;
     seen.add(key);
     const hits = countMatches(w, corpus.sentences);
     const df = Math.max(...[...germanForms(w)].map(corpus.df), 1);

@@ -15,8 +15,10 @@ import { PERSONS, type Person, type VerbsFile } from '../src/modules/conjugation
 import { download, lines } from './lib/io.ts';
 import { DOWNLOAD_DIR, ensureSources } from './sources.ts';
 import { loadCorpus } from './corpus.ts';
-import { buildVerbs } from './verbs/build.ts';
+import { loadGerman } from './german.ts';
+import { verbCandidates, buildVerbs } from './verbs/build.ts';
 import { buildSentences } from './sentences/build.ts';
+import { buildVocab, vocabCandidates } from './vocab/build.ts';
 import { loadCurated } from './mode/build.ts';
 import { MODEL_VERBS, TENSE_INFO } from '../src/modules/conjugation/tenseInfo.ts';
 
@@ -44,7 +46,8 @@ const REFERENCE_SIZE = 320;
 const log = (s: string) => console.log(`fixtures: ${s}`);
 await ensureSources(log);
 const corpus = await loadCorpus(log);
-const { file } = await buildVerbs(corpus);
+const german = await loadGerman(new Set([...verbCandidates(corpus), ...vocabCandidates(corpus)]));
+const { file } = await buildVerbs(corpus, german);
 
 // Dev sample: top 30 + every 50th rank, plus verbs needed offline: auxiliaries, model verbs
 // and irregular models of the tense info, and all verbs of the curated mode sentences.
@@ -140,5 +143,10 @@ const sentenceSample = Object.fromEntries(
 );
 await writeFile(join(outDir, 'sentences.sample.json'), JSON.stringify(sentenceSample));
 console.log(`BEGIN_SAMPLE${JSON.stringify(sampleFile)}END_SAMPLE`);
+// Vocabulary sample: the 300 most frequent words (placement test needs a few blocks).
+const vocab = await buildVocab(corpus, german);
+const vocabSample = { ...vocab.file, words: vocab.file.words.slice(0, 300) };
+await writeFile(join(outDir, 'vocab.sample.json'), JSON.stringify(vocabSample));
+console.log(`BEGIN_VOCAB${JSON.stringify(vocabSample)}END_VOCAB`);
 console.log(`BEGIN_SENTENCES${JSON.stringify(sentenceSample)}END_SENTENCES`);
 console.log(`BEGIN_REFERENCE${JSON.stringify(reference)}END_REFERENCE`);

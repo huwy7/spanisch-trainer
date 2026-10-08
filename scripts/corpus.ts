@@ -16,9 +16,36 @@ export interface Wiktionary {
   names: Set<string>;
   /** Complete conjugation tables of non-reflexive verbs. */
   verbs: Map<string, ParsedVerb>;
+  /** Word class (and gender of nouns) of each lemma; first entry wins, nouns preferred. */
+  info: Map<string, LemmaInfo>;
   /** Forms that are unambiguously vosotros / voseo (for the sentence filter, SPEC §2). */
   vosotros: Set<string>;
   voseo: Set<string>;
+}
+
+export type WordClass = 'noun' | 'verb' | 'adj' | 'adv' | 'other';
+export type Gender = 'm' | 'f' | 'mf';
+
+export interface LemmaInfo {
+  pos: WordClass;
+  gender?: Gender;
+}
+
+const POS: Record<string, WordClass> = { noun: 'noun', verb: 'verb', adj: 'adj', adv: 'adv' };
+
+/** Grammatical gender of a Spanish noun entry (head template arg or expansion "casa f"). */
+export function genderOf(e: WiktEntry): Gender | undefined {
+  const tpl = e.head_templates?.find((t) => t.name?.startsWith('es-noun'));
+  const arg = tpl?.args?.['1'] ?? tpl?.args?.g;
+  const fromText = /^\S+ (m or f|mf|m|f)\b/.exec(tpl?.expansion ?? '')?.[1];
+  const g = (arg ?? fromText ?? '').replace(/-p$/, '');
+  if (g === 'm' || g === 'f') return g;
+  if (g === 'mf' || g === 'm or f' || g === 'mfbysense') return 'mf';
+  const tags = e.tags ?? [];
+  if (tags.includes('masculine') && tags.includes('feminine')) return 'mf';
+  if (tags.includes('masculine')) return 'm';
+  if (tags.includes('feminine')) return 'f';
+  return undefined;
 }
 
 export interface SentencePair {
@@ -42,6 +69,7 @@ export async function loadWiktionary(): Promise<Wiktionary> {
     formLemmas: new Map(),
     names: new Set(),
     verbs: new Map(),
+    info: new Map(),
     vosotros: new Set(),
     voseo: new Set(),
   };
@@ -70,6 +98,11 @@ export async function loadWiktionary(): Promise<Wiktionary> {
       continue;
     }
     w.lemmas.add(word);
+    const pos = POS[e.pos] ?? 'other';
+    const known = w.info.get(word);
+    if (!known || (known.pos !== 'noun' && pos === 'noun')) {
+      w.info.set(word, pos === 'noun' ? { pos, gender: genderOf(e) } : { pos });
+    }
     for (const f of e.forms ?? []) {
       const form = f.form?.toLowerCase();
       if (!form || form.includes(' ')) continue;

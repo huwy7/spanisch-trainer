@@ -7,11 +7,10 @@ import {
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Corpus } from '../corpus.ts';
-import { lines, tokens } from '../lib/io.ts';
-import { sourceFile } from '../sources.ts';
+import type { GermanCandidates } from '../german.ts';
+import { tokens } from '../lib/io.ts';
 import { rankMeanings } from './meanings.ts';
 import { classify } from './regular.ts';
-import type { WiktEntry } from './wiktionary.ts';
 
 /** Number of verbs exported (most frequent first). */
 export const VERB_LIMIT = 1000;
@@ -29,53 +28,26 @@ export interface VerbBuildStats {
   spellingOnly: number;
 }
 
+/** Verbs considered for export: complete tables, most frequent first (2× the limit). */
+export function verbCandidates(corpus: Corpus): string[] {
+  return [...corpus.wikt.verbs.keys()]
+    .filter((inf) => corpus.lemmaFreq.has(inf))
+    .sort((a, b) => corpus.lemmaFreq.get(b)! - corpus.lemmaFreq.get(a)!)
+    .slice(0, VERB_LIMIT * 2);
+}
+
 export async function buildVerbs(
   corpus: Corpus,
+  german: GermanCandidates,
 ): Promise<{ file: VerbsFile; stats: VerbBuildStats }> {
   const { verbs: parsed } = corpus.wikt;
-  const freq = corpus.lemmaFreq;
-  const candidates = [...parsed.keys()]
-    .filter((inf) => freq.has(inf))
-    .sort((a, b) => freq.get(b)! - freq.get(a)!)
-    .slice(0, VERB_LIMIT * 2);
+  const candidates = verbCandidates(corpus);
   const candidateSet = new Set(candidates);
   for (const r of REQUIRED)
     if (!candidateSet.has(r)) throw new Error(`required verb missing: ${r}`);
 
-  // 3. de.wiktionary: German candidates
-  const direct = new Map<string, string[]>();
-  const reverseRaw = new Map<string, { word: string; pos: number }[]>();
-  for await (const line of lines(sourceFile('deWiktionary'))) {
-    // cheap pre-filter: skip lines without Spanish content
-    if (!line.includes('"es"')) continue;
-    const e = JSON.parse(line) as WiktEntry;
-    if (!e.word) continue;
-    if (e.lang_code === 'es') {
-      const w = e.word.toLowerCase();
-      if (!candidateSet.has(w)) continue;
-      const list = direct.get(w) ?? [];
-      for (const t of e.translations ?? []) {
-        if ((t.lang_code ?? t.code) === 'de' && t.word && !list.includes(t.word)) list.push(t.word);
-      }
-      direct.set(w, list);
-    } else if (e.lang_code === 'de') {
-      // position of the Spanish word among the Spanish translations of this German entry
-      let pos = 0;
-      for (const t of e.translations ?? []) {
-        if ((t.lang_code ?? t.code) !== 'es' || !t.word) continue;
-        const w = t.word.toLowerCase();
-        if (candidateSet.has(w)) {
-          const list = reverseRaw.get(w) ?? [];
-          if (!list.some((x) => x.word === e.word)) list.push({ word: e.word, pos });
-          reverseRaw.set(w, list);
-        }
-        pos++;
-      }
-    }
-  }
-  const reverse = new Map(
-    [...reverseRaw].map(([k, list]) => [k, list.sort((a, b) => a.pos - b.pos).map((x) => x.word)]),
-  );
+  // 3. German candidates (de.wiktionary, loaded once for all modules)
+  const { direct, reverse } = german;
 
   // 4. Tatoeba: German translations of sentences containing a form of each verb
   const formToVerb = new Map<string, string>();
@@ -125,7 +97,7 @@ export async function buildVerbs(
           total: corpus.pairs.length,
           df: (t) => df.get(t) ?? 0,
         },
-        { verb: true },
+        { kind: 'verb' },
       );
     if (!de.length) continue;
     withMeaning++;
