@@ -95,7 +95,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
   - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
   - Sätze: `s:<Tatoeba-ID>` (DE → ES) bzw. `s:r:<Tatoeba-ID>` (ES → DE, eigener Lernstand)
   - Vokabeln: `v:<Lemma>`
-  - Phrasen: eigene ID
+  - Phrasen: `p:<id>` (DE → ES) bzw. `p:r:<id>` (ES → DE, eigener Lernstand). Die ID ist kuratiert und stabil (`st-001`).
 - Statistik minimal: heute fällig, Trefferquote pro Zeitform und Modus-Kategorie (zeigt Schwachstellen).
 - Backup: Export/Import des Fortschritts als JSON-Datei.
 - Datenschutz gegen Speicher-Räumung (Safari): beim Start `navigator.storage.persist()` anfordern. Liegt der letzte Export mehr als 7 Tage zurück, erscheint ein nicht blockierender Hinweis "Backup erstellen".
@@ -157,6 +157,6 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☑ |
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☑ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☑ |
-| M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ☐ |
+| M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ◐ |
 | M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☐ |
 | M7 | Gamification (optional) | Nur bei Bedarf. Belohnende Elemente (z.B. Streaks, Tagesziel, Meilensteine) auf Basis des Review-Logs, ohne Limits oder Sperren. Umfang wird vor dem Start in der SPEC definiert. | ☐ |
