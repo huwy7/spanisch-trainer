@@ -90,7 +90,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Stabile Karten-IDs:
   - Konjugation: `verb:tense:person`
   - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
-  - Sätze: Tatoeba-ID
+  - Sätze: `s:<Tatoeba-ID>` (DE → ES) bzw. `s:r:<Tatoeba-ID>` (ES → DE, eigener Lernstand)
   - Vokabeln: Lemma
   - Phrasen: eigene ID
 - Statistik minimal: heute fällig, Trefferquote pro Zeitform und Modus-Kategorie (zeigt Schwachstellen).
