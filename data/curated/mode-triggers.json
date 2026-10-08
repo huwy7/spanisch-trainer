@@ -1,0 +1,196 @@
+{
+  "_comment": "Trigger rules for module M (SPEC §3). Order matters: the first matching rule wins, so negated forms come before positive ones. Patterns are regular expressions, matched case-insensitively on word boundaries. mood: subj | ind | both (decided by the verb found).",
+  "categories": {
+    "wunsch": { "label": "Wunsch / Willen" },
+    "gefuehl": { "label": "Gefühl" },
+    "zweifel": { "label": "Zweifel / Verneinung" },
+    "unpersoenlich": { "label": "Unpersönliche Ausdrücke" },
+    "konjunktion": { "label": "Konjunktionen" },
+    "zeitlich": { "label": "Zeitliche Nebensätze" },
+    "si": { "label": "si-Sätze" },
+    "relativ": { "label": "Relativsätze" },
+    "ojala": { "label": "ojalá" }
+  },
+  "rules": [
+    {
+      "id": "ojala",
+      "category": "ojala",
+      "mood": "subj",
+      "patterns": ["ojalá(?: que)?"],
+      "explain": {
+        "subj": "Nach ojalá („hoffentlich“, „wenn doch“) steht immer der Subjuntivo. Presente: erfüllbarer Wunsch. Imperfecto: unwahrscheinlicher oder irrealer Wunsch."
+      }
+    },
+    {
+      "id": "zweifel-neg",
+      "category": "zweifel",
+      "mood": "subj",
+      "patterns": [
+        "no (?:creo|crees|cree|creemos|creen|creía|creo yo) que",
+        "no (?:pienso|piensas|piensa|pensamos|piensan|pensaba) que",
+        "no (?:me|te|le|nos|les) parece que",
+        "no es (?:cierto|verdad|seguro|evidente|obvio) que",
+        "no (?:estoy|está|estamos|están) (?:seguro|segura|seguros|seguras) de que",
+        "no (?:digo|dice) que",
+        "no significa que",
+        "(?:dudo|dudas|duda|dudamos|dudan|dudaba) (?:de )?que"
+      ],
+      "explain": {
+        "subj": "Zweifel oder verneinte Meinung (no creo que, dudo que, no es cierto que): Der Inhalt wird nicht als wahr behauptet → Subjuntivo."
+      }
+    },
+    {
+      "id": "meinung-ind",
+      "category": "zweifel",
+      "mood": "ind",
+      "patterns": [
+        "(?:creo|crees|cree|creemos|creen|creía) que",
+        "(?:pienso|piensas|piensa|pensamos|piensan|pensaba) que",
+        "(?:me|te|le|nos|les) parece que",
+        "es (?:cierto|verdad|evidente|obvio|seguro) que",
+        "está claro que",
+        "(?:estoy|está|estamos|están) (?:seguro|segura|seguros|seguras) de que",
+        "(?:sé|sabes|sabe|sabemos|saben) que"
+      ],
+      "explain": {
+        "ind": "Kontrast: Meinung, Wissen oder Gewissheit ohne Verneinung (creo que, es verdad que, sé que) → Indikativ. Erst die Verneinung (no creo que) verlangt den Subjuntivo."
+      }
+    },
+    {
+      "id": "wunsch",
+      "category": "wunsch",
+      "mood": "subj",
+      "patterns": [
+        "(?:quiero|quieres|quiere|queremos|quieren|quería|querías|queríamos|querían|quisiera|quise|quiso) que",
+        "(?:espero|esperas|espera|esperamos|esperan|esperaba) que",
+        "(?:deseo|deseas|desea|deseamos|desean) que",
+        "(?:prefiero|prefieres|prefiere|preferimos|prefieren|prefería) que",
+        "(?:te|le|les|os|me|nos)? ?(?:pido|pides|pide|pedimos|piden|pidió|pedí) que",
+        "(?:necesito|necesitas|necesita|necesitamos|necesitan) que",
+        "(?:te|le|les|me|nos)? ?(?:ruego|ruega|ruegan|aconsejo|aconseja|aconsejan|recomiendo|recomienda|recomiendan|recomendó|sugiero|sugiere|sugieren|prohíbo|prohíbe|prohíben|permito|permite|permiten) que",
+        "(?:te|le|les|me|nos)? ?(?:dejo|deja|dejan) que",
+        "(?:insisto|insiste) en que"
+      ],
+      "explain": {
+        "subj": "Wunsch, Wille, Bitte oder Aufforderung (quiero que, espero que, te pido que): Das Subjekt will etwas von jemand anderem → Subjuntivo."
+      }
+    },
+    {
+      "id": "gefuehl",
+      "category": "gefuehl",
+      "mood": "subj",
+      "patterns": [
+        "(?:me|te|le|nos|les) (?:alegra|gusta|encanta|molesta|preocupa|sorprende|extraña|da miedo|da pena|importa|fastidia|enfada|duele) que",
+        "(?:me alegro|te alegras|se alegra|nos alegramos|se alegran) de que",
+        "(?:tengo|tienes|tiene|tenemos|tienen) miedo de que",
+        "(?:odio|odias|odia|odiamos|odian) que",
+        "(?:siento mucho|lamento|lamentamos) que",
+        "qué (?:pena|lástima|bien|raro) que",
+        "(?:estoy|está|estamos|están) (?:contento|contenta|contentos|contentas|feliz|felices|triste|tristes|orgulloso|orgullosa) de que"
+      ],
+      "explain": {
+        "subj": "Gefühl oder Bewertung (me alegra que, tengo miedo de que, qué pena que): Der Nebensatz wird emotional kommentiert → Subjuntivo, auch wenn er wahr ist."
+      }
+    },
+    {
+      "id": "unpersoenlich",
+      "category": "unpersoenlich",
+      "mood": "subj",
+      "patterns": [
+        "es (?:importante|necesario|posible|imposible|probable|improbable|mejor|peor|raro|normal|lógico|natural|urgente|fundamental|preciso|bueno|malo|una pena|una lástima|hora de) que",
+        "(?:era|sería|fue) (?:importante|necesario|posible|imposible|mejor|raro|normal) que",
+        "más vale que",
+        "hace falta que",
+        "puede (?:ser )?que",
+        "basta (?:con )?que"
+      ],
+      "explain": {
+        "subj": "Unpersönliche Bewertung (es importante que, es posible que, hace falta que): Notwendigkeit, Möglichkeit oder Urteil → Subjuntivo. Ausnahme sind Gewissheit-Ausdrücke wie es verdad que (Indikativ)."
+      }
+    },
+    {
+      "id": "konj-final",
+      "category": "konjunktion",
+      "mood": "subj",
+      "patterns": [
+        "para que",
+        "a fin de que",
+        "sin que",
+        "antes (?:de )?que",
+        "a menos que",
+        "a no ser que",
+        "con tal (?:de )?que",
+        "en caso de que",
+        "como si"
+      ],
+      "explain": {
+        "subj": "Diese Konjunktionen verlangen immer den Subjuntivo: para que (damit), sin que (ohne dass), antes de que (bevor), a menos que (es sei denn), con tal de que (sofern), en caso de que (falls); como si (als ob) mit Subjuntivo imperfecto."
+      }
+    },
+    {
+      "id": "aunque",
+      "category": "konjunktion",
+      "mood": "both",
+      "patterns": ["aunque", "a pesar de que"],
+      "explain": {
+        "subj": "aunque + Subjuntivo: „auch wenn“ – die Einschränkung ist hypothetisch, unbekannt oder unwichtig.",
+        "ind": "Kontrast – aunque + Indikativ: „obwohl“ – die Einschränkung ist eine bekannte Tatsache."
+      }
+    },
+    {
+      "id": "zeitlich",
+      "category": "zeitlich",
+      "mood": "both",
+      "patterns": [
+        "cuando",
+        "en cuanto",
+        "hasta que",
+        "después (?:de )?que",
+        "tan pronto como",
+        "mientras",
+        "siempre que",
+        "cada vez que"
+      ],
+      "forbidTenses": ["cond", "fut"],
+      "explain": {
+        "subj": "Zeitlicher Nebensatz mit Zukunftsbezug (cuando llegues, en cuanto pueda): Das Ereignis ist noch nicht eingetreten → Subjuntivo. Futur ist nach cuando nicht möglich.",
+        "ind": "Kontrast: Gewohnheit, Vergangenheit oder allgemeine Aussage (cuando era niño, siempre que llueve) → Indikativ."
+      }
+    },
+    {
+      "id": "si",
+      "category": "si",
+      "mood": "both",
+      "patterns": ["si"],
+      "forbidTenses": ["subj_pres", "fut", "cond"],
+      "explain": {
+        "subj": "Irrealer si-Satz: si + Subjuntivo imperfecto (si tuviera tiempo, …) bzw. pluscuamperfecto für die Vergangenheit. Kein Subjuntivo presente nach si.",
+        "ind": "Kontrast – realer si-Satz: Die Bedingung ist erfüllbar (si tienes tiempo, …) → Indikativ (nie Futur oder Konditional nach si)."
+      }
+    },
+    {
+      "id": "relativ-unbestimmt",
+      "category": "relativ",
+      "mood": "subj",
+      "patterns": [
+        "(?:busco|buscas|busca|buscamos|buscan|necesito|necesitamos|quiero|queremos) (?:a )?(?:alguien|algo|un|una|unos|unas)(?: [\\p{L}]+)? que",
+        "no (?:hay|había|conozco|conoce|tengo|tiene|veo|encuentro) (?:a )?(?:nadie|nada|ningún|ninguna|ninguno)(?: [\\p{L}]+)? que",
+        "¿?(?:hay|conoces|conoce|conocen|tienes|tiene) (?:a )?(?:alguien|algo|algún|alguna)(?: [\\p{L}]+)? que"
+      ],
+      "explain": {
+        "subj": "Relativsatz mit unbestimmtem oder nicht existierendem Bezug (busco a alguien que…, no hay nadie que…): Es ist unklar, ob es so etwas gibt → Subjuntivo."
+      }
+    },
+    {
+      "id": "relativ-bestimmt",
+      "category": "relativ",
+      "mood": "ind",
+      "patterns": [
+        "(?:conozco|conoces|conoce|conocemos|tengo|tienes|tiene|tenemos|hay) (?:a )?(?:alguien|un|una|unos|unas)(?: [\\p{L}]+)? que"
+      ],
+      "explain": {
+        "ind": "Kontrast: Der Bezug ist bekannt und existiert (conozco a alguien que…, tengo un amigo que…) → Indikativ."
+      }
+    }
+  ]
+}

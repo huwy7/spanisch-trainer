@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { db } from '../../db/db.ts';
-import { countNewToday, loadStates, recordAnswer } from '../../db/progress.ts';
-import { countDue, nextCard } from '../../srs/queue.ts';
-import type { Answer, SrsState } from '../../srs/scheduler.ts';
-import type { ModuleId } from '../registry.ts';
+import { db } from '../db/db.ts';
+import { countNewToday, loadStates, recordAnswer } from '../db/progress.ts';
+import { countDue, nextCard } from './queue.ts';
+import type { Answer, SrsState } from './scheduler.ts';
+import type { ModuleId } from '../modules/registry.ts';
 
 export type SessionView =
   | { kind: 'loading' }
@@ -81,7 +81,7 @@ export function useSession(module: ModuleId, candidates: readonly string[], newP
   }, [module, advance]);
 
   const answer = useCallback(
-    async (id: string, a: Answer) => {
+    async (id: string, a: Answer, extra?: { correct?: boolean }) => {
       const now = Date.now();
       const prev = states.current.get(id);
       const next = await recordAnswer(db(), {
@@ -91,6 +91,7 @@ export function useSession(module: ModuleId, candidates: readonly string[], newP
         prev,
         now,
         durationMs: now - shownAt.current,
+        correct: extra?.correct,
       });
       if (!prev || prev.reps === 0) newToday.current++;
       reviewed.current++;

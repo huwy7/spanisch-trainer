@@ -1,0 +1,55 @@
+{
+  "_comment": "Curated sentences for module M (SPEC §3). The gap is marked with {braces}. The pipeline checks each sentence: trigger found by mode-triggers.json, gap directly after it, infinitive and mood confirmed by the verb tables. 'pair' keeps contrast pairs together. Written by Claude Code; spot-check by the user.",
+  "sentences": [
+    {"id": "oj1", "es": "Ojalá {haga} buen tiempo mañana.", "inf": "hacer", "mood": "subj", "de": "Hoffentlich ist morgen schönes Wetter."},
+    {"id": "oj2", "es": "Ojalá {tuviera} más tiempo para leer.", "inf": "tener", "mood": "subj", "de": "Wenn ich doch nur mehr Zeit zum Lesen hätte."},
+    {"id": "oj3", "es": "Ojalá que {lleguen} a tiempo.", "inf": "llegar", "mood": "subj", "de": "Hoffentlich kommen sie rechtzeitig an."},
+
+    {"id": "wu1", "es": "Quiero que {vengas} a mi fiesta.", "inf": "venir", "mood": "subj", "de": "Ich möchte, dass du zu meiner Party kommst."},
+    {"id": "wu2", "es": "Mis padres esperan que {estudie} medicina.", "inf": "estudiar", "mood": "subj", "de": "Meine Eltern erwarten, dass ich Medizin studiere."},
+    {"id": "wu3", "es": "Te pido que no {digas} nada.", "inf": "decir", "mood": "subj", "de": "Ich bitte dich, nichts zu sagen."},
+    {"id": "wu4", "es": "El médico me recomienda que {descanse} más.", "inf": "descansar", "mood": "subj", "de": "Der Arzt empfiehlt mir, mich mehr auszuruhen."},
+    {"id": "wu5", "es": "Prefiero que {hablemos} mañana.", "inf": "hablar", "mood": "subj", "de": "Mir ist lieber, dass wir morgen reden."},
+
+    {"id": "ge1", "es": "Me alegra que {estés} aquí.", "inf": "estar", "mood": "subj", "de": "Es freut mich, dass du hier bist."},
+    {"id": "ge2", "es": "Tengo miedo de que {pierdas} el tren.", "inf": "perder", "mood": "subj", "de": "Ich habe Angst, dass du den Zug verpasst."},
+    {"id": "ge3", "es": "Qué pena que no {puedas} venir.", "inf": "poder", "mood": "subj", "de": "Wie schade, dass du nicht kommen kannst."},
+    {"id": "ge4", "es": "Me molesta que {hablen} tan alto.", "inf": "hablar", "mood": "subj", "de": "Es stört mich, dass sie so laut reden."},
+
+    {"id": "zw1", "pair": "creer", "es": "Creo que {tiene} razón.", "inf": "tener", "mood": "ind", "de": "Ich glaube, er hat recht."},
+    {"id": "zw2", "pair": "creer", "es": "No creo que {tenga} razón.", "inf": "tener", "mood": "subj", "de": "Ich glaube nicht, dass er recht hat."},
+    {"id": "zw3", "es": "Dudo que {sea} verdad.", "inf": "ser", "mood": "subj", "de": "Ich bezweifle, dass das wahr ist."},
+    {"id": "zw4", "pair": "verdad", "es": "Es verdad que {es} difícil.", "inf": "ser", "mood": "ind", "de": "Es stimmt, dass es schwierig ist."},
+    {"id": "zw5", "pair": "verdad", "es": "No es verdad que {sea} tan difícil.", "inf": "ser", "mood": "subj", "de": "Es stimmt nicht, dass es so schwierig ist."},
+    {"id": "zw6", "es": "Estoy seguro de que {vendrá}.", "inf": "venir", "mood": "ind", "de": "Ich bin sicher, dass er kommen wird."},
+
+    {"id": "un1", "es": "Es importante que {duermas} lo suficiente.", "inf": "dormir", "mood": "subj", "de": "Es ist wichtig, dass du genug schläfst."},
+    {"id": "un2", "es": "Es posible que {llegue} tarde.", "inf": "llegar", "mood": "subj", "de": "Es ist möglich, dass ich spät komme."},
+    {"id": "un3", "es": "Hace falta que {hablemos} con ella.", "inf": "hablar", "mood": "subj", "de": "Wir müssen mit ihr reden."},
+    {"id": "un4", "es": "Es mejor que no {salgas} hoy.", "inf": "salir", "mood": "subj", "de": "Es ist besser, wenn du heute nicht ausgehst."},
+    {"id": "un5", "es": "Puede que {tengas} razón.", "inf": "tener", "mood": "subj", "de": "Vielleicht hast du recht."},
+
+    {"id": "ko1", "es": "Te lo explico para que lo {entiendas}.", "inf": "entender", "mood": "subj", "de": "Ich erkläre es dir, damit du es verstehst."},
+    {"id": "ko2", "es": "Salió de casa sin que lo {vieran}.", "inf": "ver", "mood": "subj", "de": "Er verliess das Haus, ohne dass man ihn sah."},
+    {"id": "ko3", "es": "Llámame antes de que {salgas}.", "inf": "salir", "mood": "subj", "de": "Ruf mich an, bevor du gehst."},
+    {"id": "ko4", "es": "Iremos a la playa a menos que {haga} frío.", "inf": "hacer", "mood": "subj", "de": "Wir gehen an den Strand, es sei denn, es ist kalt."},
+    {"id": "ko5", "es": "Habla como si lo {supiera} todo.", "inf": "saber", "mood": "subj", "de": "Er redet, als ob er alles wüsste."},
+    {"id": "ko6", "pair": "aunque", "es": "Aunque {está} cansado, sigue trabajando.", "inf": "estar", "mood": "ind", "de": "Obwohl er müde ist, arbeitet er weiter."},
+    {"id": "ko7", "pair": "aunque", "es": "Aunque {esté} cansado, mañana iré al gimnasio.", "inf": "estar", "mood": "subj", "de": "Auch wenn ich müde sein sollte, gehe ich morgen ins Fitnessstudio."},
+
+    {"id": "ze1", "pair": "cuando", "es": "Cuando {era} niño, vivía en Madrid.", "inf": "ser", "mood": "ind", "de": "Als ich ein Kind war, wohnte ich in Madrid."},
+    {"id": "ze2", "pair": "cuando", "es": "Cuando {seas} mayor, lo entenderás.", "inf": "ser", "mood": "subj", "de": "Wenn du älter bist, wirst du es verstehen."},
+    {"id": "ze3", "es": "Te llamo en cuanto {llegue} a casa.", "inf": "llegar", "mood": "subj", "de": "Ich rufe dich an, sobald ich zu Hause ankomme."},
+    {"id": "ze4", "es": "Espera aquí hasta que {vuelva}.", "inf": "volver", "mood": "subj", "de": "Warte hier, bis ich zurückkomme."},
+    {"id": "ze5", "es": "Siempre que {viene}, trae flores.", "inf": "venir", "mood": "ind", "de": "Immer wenn sie kommt, bringt sie Blumen mit."},
+
+    {"id": "si1", "pair": "si", "es": "Si {tengo} tiempo, te ayudo.", "inf": "tener", "mood": "ind", "de": "Wenn ich Zeit habe, helfe ich dir."},
+    {"id": "si2", "pair": "si", "es": "Si {tuviera} tiempo, te ayudaría.", "inf": "tener", "mood": "subj", "de": "Wenn ich Zeit hätte, würde ich dir helfen."},
+    {"id": "si3", "es": "Si {hubiera sabido} la verdad, no habría venido.", "inf": "saber", "mood": "subj", "de": "Hätte ich die Wahrheit gewusst, wäre ich nicht gekommen."},
+
+    {"id": "re1", "pair": "relativ", "es": "Busco a alguien que {hable} alemán.", "inf": "hablar", "mood": "subj", "de": "Ich suche jemanden, der Deutsch spricht."},
+    {"id": "re2", "pair": "relativ", "es": "Conozco a alguien que {habla} alemán.", "inf": "hablar", "mood": "ind", "de": "Ich kenne jemanden, der Deutsch spricht."},
+    {"id": "re3", "es": "No hay nadie que {sepa} la respuesta.", "inf": "saber", "mood": "subj", "de": "Es gibt niemanden, der die Antwort weiss."},
+    {"id": "re4", "es": "¿Hay algún restaurante que {abra} los lunes?", "inf": "abrir", "mood": "subj", "de": "Gibt es ein Restaurant, das montags geöffnet hat?"}
+  ]
+}

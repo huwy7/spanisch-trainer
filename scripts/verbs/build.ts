@@ -6,12 +6,12 @@ import {
 } from '../../src/modules/conjugation/types.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { lemmaFrequencies, parseFrequencyLine } from '../frequency.ts';
+import type { Corpus } from '../corpus.ts';
 import { lines, tokens } from '../lib/io.ts';
 import { sourceFile } from '../sources.ts';
 import { rankMeanings } from './meanings.ts';
 import { classify } from './regular.ts';
-import { isReflexive, parseVerb, type ParsedVerb, type WiktEntry } from './wiktionary.ts';
+import type { WiktEntry } from './wiktionary.ts';
 
 /** Number of verbs exported (most frequent first). */
 export const VERB_LIMIT = 1000;
@@ -30,50 +30,10 @@ export interface VerbBuildStats {
 }
 
 export async function buildVerbs(
-  log: (s: string) => void,
+  corpus: Corpus,
 ): Promise<{ file: VerbsFile; stats: VerbBuildStats }> {
-  // 1. en.wiktionary: lemmas, form → lemma map, verb tables
-  const lemmas = new Set<string>();
-  const formLemmas = new Map<string, string[]>();
-  const parsed = new Map<string, ParsedVerb>();
-  const addForm = (form: string, lemma: string) => {
-    const list = formLemmas.get(form);
-    if (!list) formLemmas.set(form, [lemma]);
-    else if (!list.includes(lemma)) list.push(lemma);
-  };
-  for await (const line of lines(sourceFile('enWiktionary'))) {
-    const e = JSON.parse(line) as WiktEntry;
-    if (e.lang_code !== 'es' || !e.word || !e.pos) continue;
-    const word = e.word.toLowerCase();
-    const senses = e.senses ?? [];
-    if (senses.length && senses.every((s) => s.form_of?.length)) {
-      for (const s of senses) for (const f of s.form_of ?? []) addForm(word, f.word.toLowerCase());
-      continue;
-    }
-    if (e.pos === 'name') continue;
-    lemmas.add(word);
-    for (const f of e.forms ?? []) {
-      const form = f.form?.toLowerCase();
-      if (form && !form.includes(' ')) addForm(form, word);
-    }
-    if (e.pos === 'verb' && !isReflexive(word) && !parsed.has(word)) {
-      const v = parseVerb(e);
-      if (v) parsed.set(word, v);
-    }
-  }
-  log(`verbs: ${parsed.size} complete non-reflexive verb tables`);
-
-  // 2. frequency
-  const rows: { form: string; count: number }[] = [];
-  for await (const line of lines(sourceFile('frequency'))) {
-    const r = parseFrequencyLine(line);
-    if (r) rows.push(r);
-  }
-  const freq = lemmaFrequencies(
-    rows,
-    (w) => lemmas.has(w),
-    (f) => formLemmas.get(f) ?? [],
-  );
+  const { verbs: parsed } = corpus.wikt;
+  const freq = corpus.lemmaFreq;
   const candidates = [...parsed.keys()]
     .filter((inf) => freq.has(inf))
     .sort((a, b) => freq.get(b)! - freq.get(a)!)
@@ -130,28 +90,14 @@ export async function buildVerbs(
     ];
     for (const f of all) if (f && !formToVerb.has(f)) formToVerb.set(f, inf);
   }
-  const links = new Map<number, number>();
-  for await (const line of lines(sourceFile('tatoebaLinks'))) {
-    const [a, b] = line.split('\t').map(Number);
-    if (a && b && !links.has(a)) links.set(a, b);
-  }
-  const deText = new Map<number, string>();
-  const deIds = new Set(links.values());
-  for await (const line of lines(sourceFile('tatoebaDeu'))) {
-    const [id, , text] = line.split('\t');
-    if (id && text && deIds.has(Number(id))) deText.set(Number(id), text);
-  }
   const df = new Map<string, number>();
-  for (const text of deText.values()) {
-    for (const t of new Set(tokens(text))) df.set(t, (df.get(t) ?? 0) + 1);
+  for (const { de } of corpus.pairs) {
+    for (const t of new Set(tokens(de))) df.set(t, (df.get(t) ?? 0) + 1);
   }
   const verbSentences = new Map<string, string[][]>();
-  for await (const line of lines(sourceFile('tatoebaSpa'))) {
-    const [id, , text] = line.split('\t');
-    const de = deText.get(links.get(Number(id)) ?? 0);
-    if (!text || !de) continue;
+  for (const { es, de } of corpus.pairs) {
     const verbs = new Set(
-      tokens(text)
+      tokens(es)
         .map((t) => formToVerb.get(t))
         .filter((v): v is string => !!v),
     );
@@ -174,7 +120,11 @@ export async function buildVerbs(
       overrides.get(inf) ??
       rankMeanings(
         { direct: direct.get(inf) ?? [], reverse: reverse.get(inf) ?? [] },
-        { sentences: verbSentences.get(inf) ?? [], total: deText.size, df: (t) => df.get(t) ?? 0 },
+        {
+          sentences: verbSentences.get(inf) ?? [],
+          total: corpus.pairs.length,
+          df: (t) => df.get(t) ?? 0,
+        },
         { verb: true },
       );
     if (!de.length) continue;

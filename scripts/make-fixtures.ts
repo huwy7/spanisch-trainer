@@ -14,7 +14,10 @@ import { TENSES, type TenseId } from '../src/modules/conjugation/tenses.ts';
 import { PERSONS, type Person, type VerbsFile } from '../src/modules/conjugation/types.ts';
 import { download, lines } from './lib/io.ts';
 import { DOWNLOAD_DIR, ensureSources } from './sources.ts';
+import { loadCorpus } from './corpus.ts';
 import { buildVerbs } from './verbs/build.ts';
+import { loadCurated } from './mode/build.ts';
+import { MODEL_VERBS, TENSE_INFO } from '../src/modules/conjugation/tenseInfo.ts';
 
 const JEHLE =
   'https://raw.githubusercontent.com/ghidinelli/fred-jehle-spanish-verbs/master/jehle_verb_database.csv';
@@ -39,12 +42,20 @@ const REFERENCE_SIZE = 320;
 
 const log = (s: string) => console.log(`fixtures: ${s}`);
 await ensureSources(log);
-const { file } = await buildVerbs(log);
+const { file } = await buildVerbs(await loadCorpus(log));
 
-// Dev sample: top 30 + every 50th rank, always with the auxiliaries.
-const sample = file.verbs.filter(
-  (v) => v.rank <= 30 || v.rank % 50 === 0 || v.inf === 'haber' || v.inf === 'ir',
-);
+// Dev sample: top 30 + every 50th rank, plus verbs needed offline: auxiliaries, model verbs
+// and irregular models of the tense info, and all verbs of the curated mode sentences.
+const needed = new Set([
+  'haber',
+  'ir',
+  ...MODEL_VERBS,
+  ...Object.values(TENSE_INFO).map((t) => t.irregularModel),
+  ...(await loadCurated()).map((s) => s.inf),
+]);
+const sample = file.verbs.filter((v) => v.rank <= 30 || v.rank % 50 === 0 || needed.has(v.inf));
+const missing = [...needed].filter((inf) => !sample.some((v) => v.inf === inf));
+if (missing.length) log(`WARNING verbs not in export: ${missing.join(', ')}`);
 const sampleFile: VerbsFile = { version: 1, verbs: sample.map((v, i) => ({ ...v, rank: i + 1 })) };
 const byInf = new Map(sampleFile.verbs.map((v) => [v.inf, v]));
 const lookup = (inf: string) => byInf.get(inf);

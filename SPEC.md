@@ -37,6 +37,7 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 - Tippen: Akzentfehler werden als "fast richtig" angezeigt und als Hard gewertet. Eine Ñ/Akzent-Hilfsleiste über der Tastatur.
 - Imperativo (afirmativo + negativo) nur für tú, usted, nosotros, ustedes. Für yo gibt es keine Imperativ-Karten. Die Personen-Liste ist pro Zeitform definiert, damit keine ungültigen Karten-IDs entstehen.
 - Filter: Zeitformen, Niveau, nur unregelmässige Verben.
+- **Zeitform-Info** (ⓘ-Taste, nicht dauerhaft sichtbar): pro Zeitform Verwendung, Bildungsregel, 2–3 Beispielsätze (ES/DE) und die volle Konjugation aller Personen an Modellverben (hablar, comer, vivir + ein unregelmässiges Verb). Aufrufbar im Setup neben jeder Zeitform und während der Übung neben der Zeitform. Vor dem Aufdecken nur Modellverben (sonst stünde die Lösung da), nach dem Aufdecken zusätzlich die Tabelle des abgefragten Verbs.
 - Inhalte werden generiert, also unbegrenzt.
 - Quelle der einfachen Formen: en.wiktionary (Pipeline). Die Engine in `src/` bildet daraus zusammengesetzte Zeiten, *ir a* + Infinitiv und den verneinten Imperativ. Deutsche Bedeutung des Infinitivs aus de.wiktionary.
 - "Unregelmässig" = Abweichung von der regelmässigen Bildung (Stammwechsel oder irregulär). Reine Schreibanpassungen (buscar → busqué) gelten nicht als unregelmässig.
@@ -88,6 +89,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Modus "Alles mischen" zieht aus allen Modulen.
 - Stabile Karten-IDs:
   - Konjugation: `verb:tense:person`
+  - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
   - Sätze: Tatoeba-ID
   - Vokabeln: Lemma
   - Phrasen: eigene ID
@@ -149,7 +151,7 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M0 | Setup | Repo, Stack, PWA, Deploy via Action. Leere App auf dem iPhone-Homescreen installiert, startet im Flugmodus. | ◐ |
 | M0b | Daten-Spike | `docs/spike-report.md` mit Zahlen und Entscheid zu jedem offenen Punkt aus §7. SPEC nachgeführt. | ☑ |
 | M1 | Konjugation | Pipeline-Teil Verben (Wiktionary) in der Action, Engine mit Tests (inkl. ≥ 200 Stichproben gegen Referenz-Fixture), alle Zeitformen aus §3, beide Antwortmodi, FSRS, IndexedDB, Backup Export/Import. | ☑ |
-| M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☐ |
+| M2 | Modus wählen | Alle Kategorien inkl. Kontrastpaare, Erklärung nach der Antwort, Statistik pro Kategorie. | ☑ |
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☐ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☐ |
 | M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ☐ |

@@ -56,6 +56,22 @@ export function conjugate(
   }
 }
 
+export interface TableRow {
+  person: Person;
+  form: string;
+  alternatives: string[];
+}
+
+/** All persons of a tense for one verb (tense info sheet); imperative without yo. */
+export function conjugationTable(verb: VerbEntry, tense: TenseId, lookup: VerbLookup): TableRow[] {
+  const rows: TableRow[] = [];
+  for (const person of TENSES[tense].persons) {
+    const c = conjugate(verb, tense, person, lookup);
+    if (c) rows.push({ person, form: c.answer, alternatives: c.alternatives });
+  }
+  return rows;
+}
+
 // ------------------------------------------------------------------ card IDs
 
 export interface CardRef {

@@ -21,6 +21,8 @@ export interface ReviewRecord {
   durationMs: number;
   /** Card was new before this answer (counts toward new cards per day). */
   wasNew: boolean;
+  /** Module M: was the mood chosen correctly? Not indexed, so no schema change. */
+  correct?: boolean;
 }
 
 export interface SettingRecord {

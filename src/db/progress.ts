@@ -32,6 +32,7 @@ export async function recordAnswer(
     prev: SrsState | undefined;
     now: number;
     durationMs: number;
+    correct?: boolean;
   },
 ): Promise<SrsState> {
   const next = review(args.prev, args.answer, args.now);
@@ -44,6 +45,7 @@ export async function recordAnswer(
       ts: args.now,
       durationMs: Math.max(0, Math.round(args.durationMs)),
       wasNew: isNew(args.prev),
+      ...(args.correct === undefined ? {} : { correct: args.correct }),
     });
   });
   return next;

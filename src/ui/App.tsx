@@ -1,4 +1,5 @@
 import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
+import { ModeModule } from '../modules/mode/ui/ModeModule.tsx';
 import type { ModuleId } from '../modules/registry.ts';
 import { BookIcon, ChartIcon, InfoIcon } from './icons.tsx';
 import { InfoPage } from './pages/InfoPage.tsx';
@@ -8,9 +9,9 @@ import { TabBar, type Tab } from './TabBar.tsx';
 import { UpdatePrompt } from './UpdatePrompt.tsx';
 import { useHashTab } from './useHashTab.ts';
 
-const ROUTES = ['lernen', 'statistik', 'info', 'konjugation'] as const;
+const ROUTES = ['lernen', 'statistik', 'info', 'konjugation', 'modus'] as const;
 type Route = (typeof ROUTES)[number];
-type TabId = Exclude<Route, 'konjugation'>;
+type TabId = Exclude<Route, 'konjugation' | 'modus'>;
 
 const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'lernen', label: 'Lernen', icon: <BookIcon /> },
@@ -18,11 +19,11 @@ const TAB_ITEMS: readonly Tab<TabId>[] = [
   { id: 'info', label: 'Info', icon: <InfoIcon /> },
 ];
 
-const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = { K: 'konjugation' };
+const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = { K: 'konjugation', M: 'modus' };
 
 export function App() {
   const [route, setRoute] = useHashTab(ROUTES, 'lernen');
-  const inModule = route === 'konjugation';
+  const inModule = route === 'konjugation' || route === 'modus';
 
   return (
     <div className="app">
@@ -33,6 +34,7 @@ export function App() {
         {route === 'statistik' && <StatsPage />}
         {route === 'info' && <InfoPage />}
         {route === 'konjugation' && <ConjugationModule onExit={() => setRoute('lernen')} />}
+        {route === 'modus' && <ModeModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
       {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabId} onSelect={setRoute} />}
