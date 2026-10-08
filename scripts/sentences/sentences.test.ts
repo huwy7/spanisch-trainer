@@ -40,6 +40,21 @@ describe('detectTenses', () => {
     expect(tenses('Tengo frío.', c)).toEqual([]);
   });
 
+  it('ignores names and prefers the non-imperative reading', () => {
+    expect(tenses('Voy a Irán y tengo frío.')).toEqual(['pres']);
+    expect(tenses('¿Dónde habla Tom?')).toEqual(['pres']);
+  });
+
+  it('drops readings of much rarer verbs (fuimos: ir ≫ fuir)', () => {
+    const fuir = {
+      ...HAND_VERBS[3]!,
+      inf: 'fuir',
+      forms: { ...HAND_VERBS[3]!.forms, pres: ['fuyo', 'fuyes', 'fuye', 'fuimos', 'fuyen'] },
+    } as (typeof HAND_VERBS)[number];
+    const an2 = buildAnalyzer([...HAND_VERBS, fuir], (inf) => ({ ir: 1500, fuir: 2 })[inf] ?? 100);
+    expect([...detectTenses('Fuimos a la playa.', { ...ctx, an: an2 })]).toEqual(['indef']);
+  });
+
   it('does not tag imperative-only readings', () => {
     expect(tenses('Ten cuidado.')).toEqual([]);
   });

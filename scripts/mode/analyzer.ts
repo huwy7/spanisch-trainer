@@ -65,8 +65,8 @@ export function buildAnalyzer(
 export const DOMINANCE = 20;
 
 /**
- * Keeps only the analyses of the clearly most frequent infinitive
- * (vengas: venir ≫ vengar; seas: ser ≫ sear). Returns all analyses if no verb dominates.
+ * Drops readings of verbs that are much rarer than the most frequent candidate
+ * (vengas: venir ≫ vengar; fuimos: ser/ir ≫ fuir). Keeps all readings if frequencies are unknown.
  */
 export function preferFrequent(
   analyses: FormAnalysis[],
@@ -74,8 +74,7 @@ export function preferFrequent(
 ): FormAnalysis[] {
   const infs = [...new Set(analyses.map((a) => a.inf))];
   if (infs.length < 2) return analyses;
-  const ranked = infs.map((inf) => ({ inf, f: an.frequency(inf) })).sort((a, b) => b.f - a.f);
-  const [top, next] = ranked as [{ inf: string; f: number }, { inf: string; f: number }];
-  if (top.f > 0 && top.f >= DOMINANCE * next.f) return analyses.filter((a) => a.inf === top.inf);
-  return analyses;
+  const top = Math.max(...infs.map(an.frequency));
+  if (top <= 0) return analyses;
+  return analyses.filter((a) => an.frequency(a.inf) * DOMINANCE >= top);
 }

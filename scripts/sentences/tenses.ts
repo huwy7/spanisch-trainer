@@ -37,14 +37,17 @@ export interface TenseContext {
  * count as their composed tense. An approximation (SPEC §6).
  */
 export function detectTenses(es: string, ctx: TenseContext): Set<TenseId> {
-  const toks = es
+  const original = es
     .normalize('NFC')
-    .toLowerCase()
     .split(/[^\p{L}\p{M}]+/u)
     .filter(Boolean);
+  const toks = original.map((w) => w.toLowerCase());
+  // capitalised words after the first are names (Irán is not ir, future)
+  const isName = (i: number) => i > 0 && /^\p{Lu}/u.test(original[i]!);
   const found = new Set<TenseId>();
   for (let i = 0; i < toks.length; i++) {
     const tok = toks[i]!;
+    if (isName(i)) continue;
     const raw = ctx.an.finite(tok);
     if (!raw.length || ctx.nonVerb(tok, raw)) continue;
     const analyses = preferFrequent(raw, ctx.an);
@@ -63,7 +66,9 @@ export function detectTenses(es: string, ctx: TenseContext): Set<TenseId> {
       i += 2;
       continue;
     }
+    // imperative readings only count if nothing else fits (está: present, not imperative)
     const tenses = new Set(analyses.map((a) => SIMPLE[a.tense]));
+    if (tenses.size > 1) tenses.delete(null);
     if (tenses.size === 1 && !tenses.has(null)) found.add([...tenses][0]!);
   }
   return found;
