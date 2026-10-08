@@ -1,0 +1,6 @@
+{
+  "_comment": "Manual word class corrections where the first Wiktionary entry is not the main reading (SPEC §3 V). Value: pos, for nouns optionally with gender (\"noun:m\").",
+  "padre": "noun:m",
+  "mierda": "noun:f",
+  "no": "adv"
+}

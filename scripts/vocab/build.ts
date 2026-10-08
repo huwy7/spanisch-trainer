@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { VocabEntry, VocabFile } from '../../src/modules/vocab/types.ts';
-import type { Corpus } from '../corpus.ts';
+import type { Corpus, LemmaInfo } from '../corpus.ts';
 import type { GermanCandidates } from '../german.ts';
 import { tokens } from '../lib/io.ts';
 import { rejectSentence, words } from '../sentences/filter.ts';
@@ -105,13 +105,14 @@ export async function buildVocab(
   }
 
   const overrides = await loadVocabOverrides();
+  const posOverrides = await loadPosOverrides();
   const out: VocabEntry[] = [];
   let withMeaning = 0;
   const homographs: string[] = [];
   for (const lemma of candidates) {
     if (out.length >= VOCAB_LIMIT) break;
     if (overrides.get(lemma) === null) continue;
-    const info = wikt.info.get(lemma)!;
+    const info = posOverrides.get(lemma) ?? wikt.info.get(lemma)!;
     const de =
       overrides.get(lemma) ??
       rankMeanings(
@@ -193,6 +194,30 @@ export async function loadVocabOverrides(): Promise<Map<string, string[] | null>
       throw new Error(`vocab-meanings.json: invalid entry for ${k}`);
     }
     map.set(k, v as string[] | null);
+  }
+  return map;
+}
+
+const POS_FILE = join(import.meta.dirname, '..', '..', 'data', 'curated', 'vocab-pos.json');
+const POS_VALUE = /^(noun|verb|adj|adv|other)(?::(m|f|mf))?$/;
+
+/** Parses a curated word class such as "noun:m" or "adv". */
+export function parsePos(value: string): LemmaInfo | null {
+  const m = POS_VALUE.exec(value);
+  if (!m || (m[2] && m[1] !== 'noun')) return null;
+  const pos = m[1] as LemmaInfo['pos'];
+  return m[2] ? { pos, gender: m[2] as LemmaInfo['gender'] } : { pos };
+}
+
+/** data/curated/vocab-pos.json: word class corrections, applied before the meanings are ranked. */
+export async function loadPosOverrides(): Promise<Map<string, LemmaInfo>> {
+  const raw = JSON.parse(await readFile(POS_FILE, 'utf8')) as Record<string, unknown>;
+  const map = new Map<string, LemmaInfo>();
+  for (const [k, v] of Object.entries(raw)) {
+    if (k.startsWith('_')) continue;
+    const info = typeof v === 'string' ? parsePos(v) : null;
+    if (!info) throw new Error(`vocab-pos.json: invalid entry for ${k}`);
+    map.set(k, info);
   }
   return map;
 }

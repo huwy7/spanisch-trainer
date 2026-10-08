@@ -3,7 +3,9 @@ import type { Corpus } from '../corpus.ts';
 import {
   betterExample,
   isHomographReading,
+  loadPosOverrides,
   loadVocabOverrides,
+  parsePos,
   meaningCoverage,
   validateVocab,
   vocabCandidates,
@@ -84,5 +86,13 @@ describe('vocab pipeline', () => {
     expect(isHomographReading('era', ['era', 'ser'], 0.01)).toBe(true);
     expect(isHomographReading('casa', ['casa', 'casar'], 0.6)).toBe(false);
     expect(isHomographReading('mesa', ['mesa'], 0)).toBe(false);
+  });
+
+  it('parses curated word classes', async () => {
+    expect(parsePos('noun:m')).toEqual({ pos: 'noun', gender: 'm' });
+    expect(parsePos('adv')).toEqual({ pos: 'adv' });
+    expect(parsePos('adv:m')).toBeNull();
+    expect(parsePos('Nomen')).toBeNull();
+    expect((await loadPosOverrides()).get('padre')).toEqual({ pos: 'noun', gender: 'm' });
   });
 });
