@@ -37,6 +37,7 @@ Gamification ist kein Nicht-Ziel. Sie ist optional für später vorgesehen (M7),
 - Tippen: Akzentfehler werden als "fast richtig" angezeigt und als Hard gewertet. Eine Ñ/Akzent-Hilfsleiste über der Tastatur.
 - Imperativo (afirmativo + negativo) nur für tú, usted, nosotros, ustedes. Für yo gibt es keine Imperativ-Karten. Die Personen-Liste ist pro Zeitform definiert, damit keine ungültigen Karten-IDs entstehen.
 - Filter: Zeitformen, Niveau, nur unregelmässige Verben.
+- **Zeitform-Info** (ⓘ-Taste, nicht dauerhaft sichtbar): pro Zeitform Verwendung, Bildungsregel, 2–3 Beispielsätze (ES/DE) und die volle Konjugation aller Personen an Modellverben (hablar, comer, vivir + ein unregelmässiges Verb). Aufrufbar im Setup neben jeder Zeitform und während der Übung neben der Zeitform. Vor dem Aufdecken nur Modellverben (sonst stünde die Lösung da), nach dem Aufdecken zusätzlich die Tabelle des abgefragten Verbs.
 - Inhalte werden generiert, also unbegrenzt.
 - Quelle der einfachen Formen: en.wiktionary (Pipeline). Die Engine in `src/` bildet daraus zusammengesetzte Zeiten, *ir a* + Infinitiv und den verneinten Imperativ. Deutsche Bedeutung des Infinitivs aus de.wiktionary.
 - "Unregelmässig" = Abweichung von der regelmässigen Bildung (Stammwechsel oder irregulär). Reine Schreibanpassungen (buscar → busqué) gelten nicht als unregelmässig.
