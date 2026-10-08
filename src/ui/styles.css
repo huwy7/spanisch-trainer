@@ -10,6 +10,8 @@
   --color-border: #e2dfd8;
   --color-accent: #c2410c;
   --color-accent-contrast: #ffffff;
+  /* chart marks: validated with the dataviz palette checks (lightness band, contrast) */
+  --color-chart: #c2410c;
   --color-success: #15803d;
   --color-warning: #b45309;
   --color-danger: #b91c1c;
@@ -39,6 +41,7 @@
     --color-border: #2f2e2b;
     --color-accent: #fb923c;
     --color-accent-contrast: #1c1b19;
+    --color-chart: #ea580c;
     --color-success: #4ade80;
     --color-warning: #fbbf24;
     --color-danger: #f87171;
@@ -783,7 +786,7 @@ code {
 .rate-bar span {
   display: block;
   height: 100%;
-  background: var(--color-accent);
+  background: var(--color-chart);
 }
 
 .rate-value {
@@ -1145,4 +1148,114 @@ code {
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- statistics charts */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.module-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.module-table th,
+.module-table td {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.module-table th:first-child,
+.module-table td:first-child {
+  text-align: left;
+}
+
+.module-table th {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bar-chart {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.bar-chart-readout {
+  min-height: 20px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-chart-plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 120px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.bar-chart-col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.bar-chart-value {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
+}
+
+.bar-chart-bar {
+  width: min(100%, 24px);
+  border-radius: 4px 4px 0 0;
+  background: var(--color-chart);
+}
+
+.bar-chart-col[aria-pressed='true'] .bar-chart-bar {
+  outline: 2px solid var(--color-text);
+  outline-offset: 1px;
+}
+
+.bar-chart-axis {
+  display: flex;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.bar-chart-axis span {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.module-table tbody th {
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 400;
 }
