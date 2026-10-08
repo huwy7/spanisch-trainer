@@ -7,3 +7,4 @@ SPEC.md
 data/dev/*.json
 src/**/__fixtures__/*.json
 data/curated/mode-sentences.json
+data/curated/phrases.json

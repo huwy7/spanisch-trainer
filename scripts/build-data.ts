@@ -18,6 +18,7 @@ import type { SentenceChunk } from '../src/modules/sentences/types.ts';
 import { loadGerman, type GermanCandidates } from './german.ts';
 import { verbCandidates, buildVerbs, validateVerbs } from './verbs/build.ts';
 import { buildVocab, validateVocab, vocabCandidates } from './vocab/build.ts';
+import { FALLBACK_LEXICON, loadPhrases, mergeLexicon, validatePhrases } from './phrases/build.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const OUT_DIR = join(ROOT, 'public', 'data');
@@ -89,6 +90,22 @@ if (corpus && german) {
   await writeFile(join(OUT_DIR, 'vocab.json'), JSON.stringify({ version: 1, words: [] }));
 }
 
+// Module P: curated phrases, validated (online also against the Wiktionary vosotros/voseo sets)
+const phrases = await loadPhrases();
+const phraseErrors = validatePhrases(
+  phrases,
+  corpus ? mergeLexicon(corpus.wikt, FALLBACK_LEXICON) : FALLBACK_LEXICON,
+);
+if (phraseErrors.length) {
+  console.error(phraseErrors.slice(0, 50).join('\n'));
+  throw new Error(`phrases.json: ${phraseErrors.length} errors`);
+}
+log(`phrases: ${phrases.phrases.length}`);
+await writeFile(
+  join(OUT_DIR, 'phrases.json'),
+  JSON.stringify({ version: phrases.version, phrases: phrases.phrases }),
+);
+
 // Module S: sentence chunks per level, hashed file names (lazy loaded, immutable cache).
 const DEV_SENTENCES = join(ROOT, 'data', 'dev', 'sentences.sample.json');
 let sentenceChunks: Record<Level, SentenceChunk>;
@@ -117,6 +134,7 @@ const chunks: Record<string, string> = {
   'verbs.json': await readFile(join(OUT_DIR, 'verbs.json'), 'utf8'),
   'mode.json': await readFile(join(OUT_DIR, 'mode.json'), 'utf8'),
   'vocab.json': await readFile(join(OUT_DIR, 'vocab.json'), 'utf8'),
+  'phrases.json': await readFile(join(OUT_DIR, 'phrases.json'), 'utf8'),
 };
 for (const level of LEVELS) {
   const content = JSON.stringify(sentenceChunks[level]);

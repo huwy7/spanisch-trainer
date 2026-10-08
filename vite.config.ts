@@ -51,6 +51,7 @@ export default defineConfig({
           'data/verbs.json',
           'data/mode.json',
           'data/vocab.json',
+          'data/phrases.json',
         ],
         navigateFallback: 'index.html',
         // Sentence chunks (M3) are not precached: hashed names → CacheFirst; the manifest
