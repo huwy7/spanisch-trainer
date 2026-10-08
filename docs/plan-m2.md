@@ -37,3 +37,11 @@ Auslöser-Muster, Verb-Erkennung nach dem Auslöser, Modus-Bestimmung inkl. zusa
 
 - Niveau-Filter für Modus-Karten (die Kategorien sind B1/B2-Stoff).
 - Freies Tippen der Form (SPEC: Aufdecken + selbst bewerten).
+
+## Ergebnis (Abschluss M2)
+
+- 749 Karten: 42 kuratiert (inkl. Kontrastpaare) + 707 aus Tatoeba (4199 Treffer, max. 60 pro Regel).
+- Pro Kategorie 59–127 Karten; Indikativ-Kontraste in Zweifel/Meinung, zeitlich, si, aunque, Relativsätze.
+- Verworfen (Präzision vor Menge): 238 mehrdeutige Formen, 104 Modus passt nicht zur Regel, 1435 kein Verb direkt nach dem Auslöser.
+- Homographen: Nach Auslösern mit festem Modus zählt nur die grammatisch mögliche Lesart (vengas → venir). Sonst entscheidet die Verbhäufigkeit (≥ 20×).
+- Zusätzlich (Nutzerwunsch): Zeitform-Info im Modul K (ⓘ, Regeln, Beispiele, Konjugationstabellen).
