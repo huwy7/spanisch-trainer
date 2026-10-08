@@ -13,6 +13,10 @@ export interface Settings {
   /** Conjugation filter: selected tense IDs and irregular-only flag. */
   conjugationTenses: string[];
   conjugationOnlyIrregular: boolean;
+  /** Sentence cards: direction, levels and tense filter (empty = all tenses). */
+  sentenceDirection: 'de-es' | 'es-de';
+  sentenceLevels: string[];
+  sentenceTenses: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -22,6 +26,9 @@ export const DEFAULT_SETTINGS: Settings = {
   firstUseAt: null,
   conjugationTenses: ['pres', 'indef', 'perf', 'ir_a'],
   conjugationOnlyIrregular: false,
+  sentenceDirection: 'de-es',
+  sentenceLevels: ['A2', 'B1'],
+  sentenceTenses: [],
 };
 
 export async function loadSettings(db: AppDB): Promise<Settings> {
