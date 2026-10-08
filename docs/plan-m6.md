@@ -28,3 +28,15 @@ Ziel (SPEC §8): Modus „Alles mischen“, Statistik-Ansicht, UI-Politur.
 ## Tests
 
 Modul aus Karten-ID, Mischen der Kandidaten, Zählen über alle Module, Statistik-Berechnung (Tagesbuckets, Vorschau).
+
+## Ergebnis
+
+- **Alles mischen:** Getestet mit allen fünf Modulen. Die neuen Karten kommen abwechselnd (K → M → S → V → P), jede Bewertung landet im Review-Log des richtigen Moduls. Ist die Vokabel-Einstufung offen, weist das Setup darauf hin.
+- **Statistik:**
+  - Modultabelle mit gelernten Karten, heute fälligen Karten und Trefferquote.
+  - Aktivität über 14 Tage und Vorschau auf 7 Tage als Balken. Ein Tipp zeigt die Details, für Screenreader gibt es eine Tabellenansicht.
+  - Die Diagrammfarbe ist ein eigenes Token und gegen helle und dunkle Flächen validiert. Das Orange der App war im Dark Mode für Flächen zu hell.
+- **Politur:**
+  - Ein gemeinsamer Session-Rahmen ersetzt fünf Kopien (−270 Zeilen).
+  - Im Tab Lernen zeigt jedes Modul seine fälligen Karten.
+  - Die Tab-Leiste ist fast deckend (vorher schien der Inhalt durch).

@@ -158,5 +158,5 @@ Status pro Meilenstein: ☐ offen · ◐ in Arbeit · ☑ fertig
 | M3 | Satzkarten | Pipeline in der Action, Filter nach Zeitform/Niveau, vosotros entfernt, Attribution sichtbar. | ☑ |
 | M4 | Vokabeln | Häufigkeitsliste, Einstufung, Beispielsätze. | ☑ |
 | M5 | Phrasen | Kuratierte Liste mit Region-Tags, vom Nutzer stichprobenhaft geprüft. | ◐ |
-| M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ◐ |
+| M6 | Feinschliff | Modus "Alles mischen", Statistik-Ansicht, UI-Politur. | ☑ |
 | M7 | Gamification (optional) | Nur bei Bedarf. Belohnende Elemente (z.B. Streaks, Tagesziel, Meilensteine) auf Basis des Review-Logs, ohne Limits oder Sperren. Umfang wird vor dem Start in der SPEC definiert. | ☐ |
