@@ -22,7 +22,7 @@ export const MODULES: readonly ModuleInfo[] = [
     title: 'Modus wählen',
     description: 'Indikativ oder Subjuntivo?',
     milestone: 'M2',
-    available: false,
+    available: true,
   },
   {
     id: 'S',
