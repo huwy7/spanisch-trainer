@@ -88,6 +88,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
 - Modus "Alles mischen" zieht aus allen Modulen.
 - Stabile Karten-IDs:
   - Konjugation: `verb:tense:person`
+  - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
   - Sätze: Tatoeba-ID
   - Vokabeln: Lemma
   - Phrasen: eigene ID
