@@ -1076,3 +1076,50 @@ code {
   background: var(--color-surface-muted);
   font-size: 13px;
 }
+
+/* ---------------------------------------------------------------- vocabulary (V) */
+
+.placement-progress {
+  text-align: center;
+  margin: 0;
+}
+
+.swipe-card {
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+  transition: border-color 0.15s;
+}
+
+.swipe-known {
+  border-color: var(--color-success);
+}
+
+.swipe-unknown {
+  border-color: var(--color-danger);
+}
+
+.placement-stop {
+  align-self: center;
+}
+
+.prompt-de {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.gender-tag {
+  margin-left: var(--space-2);
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.example {
+  margin: var(--space-3) 0 0;
+  font-size: 18px;
+}
+
+.solution-sentence .muted {
+  margin: 0;
+}

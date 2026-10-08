@@ -9,7 +9,7 @@ import {
   parseBackup,
 } from './backup.ts';
 import { AppDB } from './db.ts';
-import { countNewToday, loadStates, recordAnswer, startOfDay } from './progress.ts';
+import { countNewToday, loadStates, markKnown, recordAnswer, startOfDay } from './progress.ts';
 import { DEFAULT_SETTINGS, loadSettings, saveSetting } from './settings.ts';
 
 const NOW = new Date(2026, 9, 7, 15).getTime();
@@ -86,6 +86,27 @@ describe('progress', () => {
 
   it('starts the day at local midnight', () => {
     expect(new Date(startOfDay(NOW)).getHours()).toBe(0);
+  });
+});
+
+describe('markKnown (placement)', () => {
+  it('creates learned card states without review-log entries and keeps existing progress', async () => {
+    const db = freshDb();
+    const prev = await recordAnswer(db, {
+      cardId: 'v:casa',
+      module: 'V',
+      answer: 'again',
+      prev: undefined,
+      now: NOW,
+      durationMs: 1,
+    });
+    expect(await markKnown(db, ['v:casa', 'v:perro', 'v:gato'], 'V', NOW)).toBe(2);
+    const states = await loadStates(db, 'V');
+    expect(states.get('v:casa')).toEqual(prev);
+    expect(states.get('v:perro')!.reps).toBe(1);
+    expect(states.get('v:perro')!.due).toBeGreaterThan(NOW + 86_400_000);
+    expect(await db.reviews.count()).toBe(1);
+    expect(await countNewToday(db, 'V', NOW)).toBe(1);
   });
 });
 

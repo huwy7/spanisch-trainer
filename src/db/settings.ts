@@ -17,6 +17,9 @@ export interface Settings {
   sentenceDirection: 'de-es' | 'es-de';
   sentenceLevels: string[];
   sentenceTenses: string[];
+  /** Vocabulary placement: index of the next word, and whether it is finished. */
+  vocabPlacementIndex: number;
+  vocabPlacementDone: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -29,6 +32,8 @@ export const DEFAULT_SETTINGS: Settings = {
   sentenceDirection: 'de-es',
   sentenceLevels: ['A2', 'B1'],
   sentenceTenses: [],
+  vocabPlacementIndex: 0,
+  vocabPlacementDone: false,
 };
 
 export async function loadSettings(db: AppDB): Promise<Settings> {

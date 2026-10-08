@@ -1,7 +1,8 @@
 import { ConjugationModule } from '../modules/conjugation/ui/ConjugationModule.tsx';
 import { ModeModule } from '../modules/mode/ui/ModeModule.tsx';
 import { SentenceModule } from '../modules/sentences/ui/SentenceModule.tsx';
-import type { ModuleId } from '../modules/registry.ts';
+import { VocabModule } from '../modules/vocab/ui/VocabModule.tsx';
+import { isTabRoute, MODULE_ROUTE, ROUTES, type TabRoute } from './routes.ts';
 import { BookIcon, ChartIcon, InfoIcon } from './icons.tsx';
 import { InfoPage } from './pages/InfoPage.tsx';
 import { LearnPage } from './pages/LearnPage.tsx';
@@ -10,25 +11,15 @@ import { TabBar, type Tab } from './TabBar.tsx';
 import { UpdatePrompt } from './UpdatePrompt.tsx';
 import { useHashTab } from './useHashTab.ts';
 
-const ROUTES = ['lernen', 'statistik', 'info', 'konjugation', 'modus', 'saetze'] as const;
-type Route = (typeof ROUTES)[number];
-type TabId = Exclude<Route, 'konjugation' | 'modus' | 'saetze'>;
-
-const TAB_ITEMS: readonly Tab<TabId>[] = [
+const TAB_ITEMS: readonly Tab<TabRoute>[] = [
   { id: 'lernen', label: 'Lernen', icon: <BookIcon /> },
   { id: 'statistik', label: 'Statistik', icon: <ChartIcon /> },
   { id: 'info', label: 'Info', icon: <InfoIcon /> },
 ];
 
-const MODULE_ROUTE: Partial<Record<ModuleId, Route>> = {
-  K: 'konjugation',
-  M: 'modus',
-  S: 'saetze',
-};
-
 export function App() {
   const [route, setRoute] = useHashTab(ROUTES, 'lernen');
-  const inModule = route === 'konjugation' || route === 'modus' || route === 'saetze';
+  const inModule = !isTabRoute(route);
 
   return (
     <div className="app">
@@ -41,9 +32,10 @@ export function App() {
         {route === 'konjugation' && <ConjugationModule onExit={() => setRoute('lernen')} />}
         {route === 'modus' && <ModeModule onExit={() => setRoute('lernen')} />}
         {route === 'saetze' && <SentenceModule onExit={() => setRoute('lernen')} />}
+        {route === 'vokabeln' && <VocabModule onExit={() => setRoute('lernen')} />}
       </main>
       <UpdatePrompt />
-      {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabId} onSelect={setRoute} />}
+      {!inModule && <TabBar tabs={TAB_ITEMS} current={route as TabRoute} onSelect={setRoute} />}
     </div>
   );
 }
