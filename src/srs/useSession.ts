@@ -3,6 +3,7 @@ import { db } from '../db/db.ts';
 import { countNewToday, loadStates, recordAnswer } from '../db/progress.ts';
 import { countDue, nextCard } from './queue.ts';
 import type { Answer, SrsState } from './scheduler.ts';
+import { moduleOf } from '../modules/mix/candidates.ts';
 import type { ModuleId } from '../modules/registry.ts';
 
 export type SessionView =
@@ -21,8 +22,15 @@ export interface SessionCounts {
 /**
  * Drives one learning session over `candidates` (card IDs in new-card order).
  * SPEC §4: due first, then new; never ends by itself (more new cards on request).
+ * `scope` 'mix': cards of all modules, the daily new-card limit counts across modules and each
+ * answer is recorded under the card's own module.
  */
-export function useSession(module: ModuleId, candidates: readonly string[], newPerDay: number) {
+export function useSession(
+  scope: ModuleId | 'mix',
+  candidates: readonly string[],
+  newPerDay: number,
+) {
+  const module = scope === 'mix' ? null : scope;
   const [view, setView] = useState<SessionView>({ kind: 'loading' });
   const [counts, setCounts] = useState<SessionCounts>({
     due: 0,
@@ -86,7 +94,7 @@ export function useSession(module: ModuleId, candidates: readonly string[], newP
       const prev = states.current.get(id);
       const next = await recordAnswer(db(), {
         cardId: id,
-        module,
+        module: module ?? moduleOf(id),
         answer: a,
         prev,
         now,

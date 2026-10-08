@@ -82,6 +82,8 @@ describe('progress', () => {
       durationMs: 1,
     });
     expect(await countNewToday(db, 'K', NOW)).toBe(1);
+    expect(await countNewToday(db, null, NOW)).toBe(2);
+    expect([...(await loadStates(db, null)).keys()].sort()).toEqual(['a', 'b', 'c']);
   });
 
   it('starts the day at local midnight', () => {

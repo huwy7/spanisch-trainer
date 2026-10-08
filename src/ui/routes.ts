@@ -9,6 +9,7 @@ export const ROUTES = [
   'saetze',
   'vokabeln',
   'phrasen',
+  'mischen',
 ] as const;
 export type Route = (typeof ROUTES)[number];
 export type TabRoute = (typeof TAB_ROUTES)[number];

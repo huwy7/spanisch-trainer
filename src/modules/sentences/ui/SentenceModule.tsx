@@ -248,7 +248,7 @@ interface CardProps {
   onAnswer: (a: 'again' | 'good' | 'easy') => void;
 }
 
-function SentenceCard({ row, direction, isNew, verbs, onAnswer }: CardProps) {
+export function SentenceCard({ row, direction, isNew, verbs, onAnswer }: CardProps) {
   const [id, es, de, mask] = row;
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);

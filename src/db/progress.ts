@@ -9,16 +9,27 @@ export function startOfDay(now: number): number {
   return d.getTime();
 }
 
-export async function loadStates(db: AppDB, module: ModuleId): Promise<Map<string, SrsState>> {
-  const rows = await db.cards.where('module').equals(module).toArray();
+/** Card states of one module, or of all modules (`null`, mixed mode). */
+export async function loadStates(
+  db: AppDB,
+  module: ModuleId | null,
+): Promise<Map<string, SrsState>> {
+  const rows = await (module
+    ? db.cards.where('module').equals(module).toArray()
+    : db.cards.toArray());
   return new Map(rows.map((r) => [r.id, r.srs]));
 }
 
-export async function countNewToday(db: AppDB, module: ModuleId, now: number): Promise<number> {
+/** New cards introduced today in one module, or in all modules (`null`, mixed mode). */
+export async function countNewToday(
+  db: AppDB,
+  module: ModuleId | null,
+  now: number,
+): Promise<number> {
   return db.reviews
     .where('ts')
     .aboveOrEqual(startOfDay(now))
-    .filter((r) => r.module === module && r.wasNew)
+    .filter((r) => (module === null || r.module === module) && r.wasNew)
     .count();
 }
 

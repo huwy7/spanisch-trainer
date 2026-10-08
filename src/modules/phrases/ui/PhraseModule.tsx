@@ -233,7 +233,7 @@ interface CardProps {
   onAnswer: (a: 'again' | 'good' | 'easy') => void;
 }
 
-function PhraseCard({ phrase, direction, isNew, onAnswer }: CardProps) {
+export function PhraseCard({ phrase, direction, isNew, onAnswer }: CardProps) {
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
   const toEs = direction === 'de-es';

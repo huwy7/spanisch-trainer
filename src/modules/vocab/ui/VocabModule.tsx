@@ -172,7 +172,7 @@ function Session({
   );
 }
 
-function VocabCard({
+export function VocabCard({
   word,
   isNew,
   onAnswer,
