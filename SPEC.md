@@ -93,7 +93,7 @@ Die Form Subjuntivo imperfecto auf -se wird nur als Alternative angezeigt, nicht
   - Konjugation: `verb:tense:person`
   - Modus wählen: `m:t:<Tatoeba-ID>` bzw. `m:c:<eigene ID>` (kuratiert)
   - Sätze: `s:<Tatoeba-ID>` (DE → ES) bzw. `s:r:<Tatoeba-ID>` (ES → DE, eigener Lernstand)
-  - Vokabeln: Lemma
+  - Vokabeln: `v:<Lemma>`
   - Phrasen: eigene ID
 - Statistik minimal: heute fällig, Trefferquote pro Zeitform und Modus-Kategorie (zeigt Schwachstellen).
 - Backup: Export/Import des Fortschritts als JSON-Datei.
