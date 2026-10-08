@@ -2,7 +2,7 @@
  * Loads the shared sources once per pipeline run (SPEC §6): en.wiktionary (lemmas, forms,
  * verb tables), Tatoeba ES–DE pairs and the frequency list. Used by all modules' builders.
  */
-import { parseFrequencyLine } from './frequency.ts';
+import { lemmaFrequencies, parseFrequencyLine } from './frequency.ts';
 import { lines } from './lib/io.ts';
 import { sourceFile } from './sources.ts';
 import { isReflexive, parseVerb, type ParsedVerb, type WiktEntry } from './verbs/wiktionary.ts';
@@ -32,6 +32,8 @@ export interface Corpus {
   wikt: Wiktionary;
   pairs: SentencePair[];
   frequency: { form: string; count: number }[];
+  /** Lemma → occurrences in the frequency list (forms aggregated). */
+  lemmaFreq: Map<string, number>;
 }
 
 export async function loadWiktionary(): Promise<Wiktionary> {
@@ -136,8 +138,13 @@ export async function loadCorpus(log: (s: string) => void): Promise<Corpus> {
     loadTatoeba(),
     loadFrequency(),
   ]);
+  const lemmaFreq = lemmaFrequencies(
+    frequency,
+    (w) => wikt.lemmas.has(w),
+    (f) => wikt.formLemmas.get(f) ?? [],
+  );
   log(
     `corpus: ${wikt.lemmas.size} lemmas, ${wikt.verbs.size} verb tables, ${pairs.length} ES–DE pairs`,
   );
-  return { wikt, pairs, frequency };
+  return { wikt, pairs, frequency, lemmaFreq };
 }

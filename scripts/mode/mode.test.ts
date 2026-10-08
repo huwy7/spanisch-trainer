@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HAND_VERBS } from '../../src/modules/conjugation/__fixtures__/hand-verbs.ts';
+import sample from '../../data/dev/verbs.sample.json' with { type: 'json' };
+import type { VerbsFile } from '../../src/modules/conjugation/types.ts';
 import type { ModeCard, ModeFile } from '../../src/modules/mode/types.ts';
 import { buildAnalyzer } from './analyzer.ts';
 import {
@@ -88,6 +90,23 @@ describe('trigger rules and gap detection', () => {
     expect(ok('Quiero que vayas conmigo.')).toMatchObject({ inf: 'ir', mood: 'subj' });
   });
 
+  it('resolves rare homographs in favour of the clearly more frequent verb', () => {
+    // fake rare verb "tenar" whose present tense collides with tener's subjunctive
+    const tenar = {
+      ...HAND_VERBS[1]!,
+      inf: 'tenar',
+      forms: { ...HAND_VERBS[1]!.forms, pres: ['teno', 'tengas', 'tena', 'tenamos', 'tenan'] },
+    } as (typeof HAND_VERBS)[number];
+    const freq: Record<string, number> = { tener: 1000, tenar: 1 };
+    const an2 = buildAnalyzer([...HAND_VERBS, tenar], (inf) => freq[inf] ?? 0);
+    const r = analyzeSentence('Quiero que tengas suerte.', rules, an2);
+    expect('reject' in r ? r.reject : r.gap.inf).toBe('tener');
+    const even = buildAnalyzer([...HAND_VERBS, tenar], () => 10);
+    expect(analyzeSentence('Quiero que tengas suerte.', rules, even)).toEqual({
+      reject: 'ambiguous',
+    });
+  });
+
   it('reports sentences without trigger', () => {
     expect(analyze('Tengo un perro.')).toEqual({ reject: 'no-trigger' });
   });
@@ -114,6 +133,17 @@ describe('curated data', () => {
     expect(curated.length).toBeGreaterThan(5);
     const { errors } = curatedCards(curated, rules, an);
     expect(errors).toEqual([]);
+  });
+
+  it('all curated sentences are recognised with real verb tables (dev sample)', async () => {
+    const real = buildAnalyzer((sample as VerbsFile).verbs);
+    const curated = await loadCurated();
+    expect(curated.every((s) => (sample as VerbsFile).verbs.some((v) => v.inf === s.inf))).toBe(
+      true,
+    );
+    const { cards, errors } = curatedCards(curated, rules, real);
+    expect(errors).toEqual([]);
+    expect(cards.find((c) => c.id === 'm:c:si3')?.alternatives).toEqual(['hubiese sabido']);
   });
 
   it('covers every category and contains the contrast pairs of SPEC §3', async () => {

@@ -17,6 +17,8 @@ export interface FormAnalysis {
 
 export interface Analyzer {
   finite: (form: string) => FormAnalysis[];
+  /** Frequency of an infinitive (0 if unknown); used to resolve rare homographs. */
+  frequency: (inf: string) => number;
   /** Infinitives whose past participle is `form`. */
   participle: (form: string) => string[];
   /** -se form of a verb for a person (alternative for -ra). */
@@ -29,7 +31,10 @@ export function moodOf(tense: SimpleTense): Mood | null {
   return 'ind';
 }
 
-export function buildAnalyzer(verbs: Iterable<ParsedVerb>): Analyzer {
+export function buildAnalyzer(
+  verbs: Iterable<ParsedVerb>,
+  frequency: (inf: string) => number = () => 0,
+): Analyzer {
   const finite = new Map<string, FormAnalysis[]>();
   const participles = new Map<string, string[]>();
   const se = new Map<string, ParsedVerb>();
@@ -50,7 +55,27 @@ export function buildAnalyzer(verbs: Iterable<ParsedVerb>): Analyzer {
   }
   return {
     finite: (f) => finite.get(f) ?? [],
+    frequency,
     participle: (f) => participles.get(f) ?? [],
     seForm: (inf, p) => se.get(inf)?.subjImperfSe[PERSONS.indexOf(p)],
   };
+}
+
+/** A verb counts as dominant if it is this many times more frequent than the next candidate. */
+export const DOMINANCE = 20;
+
+/**
+ * Keeps only the analyses of the clearly most frequent infinitive
+ * (vengas: venir ≫ vengar; seas: ser ≫ sear). Returns all analyses if no verb dominates.
+ */
+export function preferFrequent(
+  analyses: FormAnalysis[],
+  an: Pick<Analyzer, 'frequency'>,
+): FormAnalysis[] {
+  const infs = [...new Set(analyses.map((a) => a.inf))];
+  if (infs.length < 2) return analyses;
+  const ranked = infs.map((inf) => ({ inf, f: an.frequency(inf) })).sort((a, b) => b.f - a.f);
+  const [top, next] = ranked as [{ inf: string; f: number }, { inf: string; f: number }];
+  if (top.f > 0 && top.f >= DOMINANCE * next.f) return analyses.filter((a) => a.inf === top.inf);
+  return analyses;
 }

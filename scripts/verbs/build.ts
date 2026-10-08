@@ -7,7 +7,6 @@ import {
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Corpus } from '../corpus.ts';
-import { lemmaFrequencies } from '../frequency.ts';
 import { lines, tokens } from '../lib/io.ts';
 import { sourceFile } from '../sources.ts';
 import { rankMeanings } from './meanings.ts';
@@ -33,12 +32,8 @@ export interface VerbBuildStats {
 export async function buildVerbs(
   corpus: Corpus,
 ): Promise<{ file: VerbsFile; stats: VerbBuildStats }> {
-  const { lemmas, formLemmas, verbs: parsed } = corpus.wikt;
-  const freq = lemmaFrequencies(
-    corpus.frequency,
-    (w) => lemmas.has(w),
-    (f) => formLemmas.get(f) ?? [],
-  );
+  const { verbs: parsed } = corpus.wikt;
+  const freq = corpus.lemmaFreq;
   const candidates = [...parsed.keys()]
     .filter((inf) => freq.has(inf))
     .sort((a, b) => freq.get(b)! - freq.get(a)!)

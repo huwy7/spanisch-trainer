@@ -178,7 +178,9 @@ export async function buildMode(
   for (const r of rulesFile.rules) {
     for (const [mood, text] of Object.entries(r.explain)) explanations[`${r.id}:${mood}`] = text;
   }
-  const an = corpus ? buildAnalyzer(corpus.wikt.verbs.values()) : null;
+  const an = corpus
+    ? buildAnalyzer(corpus.wikt.verbs.values(), (inf) => corpus.lemmaFreq.get(inf) ?? 0)
+    : null;
   const { cards: curated, errors } = curatedCards(await loadCurated(), rules, an);
 
   const rejected: Record<string, number> = {};

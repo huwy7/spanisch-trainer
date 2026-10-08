@@ -1,6 +1,6 @@
 import type { Person, SimpleTense } from '../../src/modules/conjugation/types.ts';
 import type { ModeCategory, Mood } from '../../src/modules/mode/types.ts';
-import { moodOf, type Analyzer } from './analyzer.ts';
+import { moodOf, preferFrequent, type Analyzer } from './analyzer.ts';
 
 /** One trigger rule from data/curated/mode-triggers.json. */
 export interface TriggerRule {
@@ -130,7 +130,7 @@ export function findGap(es: string, triggerEnd: number, an: Analyzer): GapResult
     i++;
   const tok = toks[i];
   if (!tok) return { reject: 'no-verb' };
-  const analyses = an.finite(tok.lower);
+  const analyses = preferFrequent(an.finite(tok.lower), an);
   if (!analyses.length) return { reject: 'no-verb' };
 
   // haber + participle (he/había/haya/hubiera … + -ado/-ido)
